@@ -1,0 +1,16 @@
+/* each category received by the web api will be applied this rule */
+.category-figure{
+    background-color:  #fbfbfb;
+    border-radius: 20px;
+    margin:10px;
+    padding: 10px;
+    box-shadow: 0px 2px 5px #777;
+}
+
+.category-figure h2{
+    max-width: 100%;
+}
+
+.category-figure img{
+    max-width: 100%;
+}

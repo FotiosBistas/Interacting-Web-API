@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>index</title>
+        <link rel="stylesheet" href="../css/index.css">
+    </head>
+    <header>
+
+    </header>
+
+    <body>
+        
+        <!-- dynamically added with handlebars -->
+        <section id="show_categories"></section>
+
+
+        <script id="categories" type="text/x-handlebars-template">
+            {{#each this}}
+                <figure class="category-figure">
+                    <h2>{{title}}</h2>
+                    <a href="category.html"><img id="{{id}}" src="{{img_url}}"></a>
+                </figure>
+            {{/each}}
+        </script>
+
+        <script src="../js/handlebars-v4.7.7.js"></script>
+        <script src="../js/javascriptindex.js"></script>
+        
+    </body>
+</html>
