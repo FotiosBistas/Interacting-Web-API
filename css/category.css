@@ -1,0 +1,31 @@
+#show_products{
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+}
+
+/* each category received by the web api will be applied this rule */
+.show_products_figure{
+    background-color:  #fbfbfb;
+    border-radius: 20px;
+    margin:10px;
+    padding: 10px;
+    width: 30em;
+    box-shadow: 0px 2px 5px #777;
+}
+
+.show_products_figure figcaption{
+    background-color: #f1ff55dd;
+    border-radius: 10px;
+    max-width: 100%;
+    padding: 10px;
+
+    box-shadow: 0px 2px 5px #777; 
+}
+
+.show_products_figure h2{
+    max-width: 100%;
+}
+
+.show_products_figure img{
+    max-width: 100%;
+}

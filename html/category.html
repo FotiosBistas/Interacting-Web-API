@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>category</title>
+        <link rel="stylesheet" href="../css/category.css">
     </head>
     <header>
 
@@ -11,17 +12,31 @@
         
 
          <!-- dynamically added with handlebars -->
-         <section id="show_sub_categories"></section>
+         <section id="show_products"></section>
 
+        <aside class="products-aside"></aside>
+        
+       
 
-         <script id="categories" type="text/x-handlebars-template">
+         <script id="products" type="text/x-handlebars-template">
              {{#each this}}
-                 <figure class="category-figure">
+                 <figure class="show_products_figure">
                      <h2>{{title}}</h2>
-                     <a href="#"><img src="{{img_url}}"></a>
+                     <h3>Cost: {{cost}} $</h3>
+                     <a href="#"><img src="{{image}}"></a>
+                     <figcaption>{{description}}</figcaption>
                  </figure>
              {{/each}}
          </script>
+
+         <script id="sub_categories" type="text/x-handlebars-template">
+                <ul>
+                {{#each this}}
+                  <li>{{this}}</li>
+                {{/each}}
+              </ul>
+        </script>
+
 
         <script id="trial" type="text/x-handlebars-template">
             

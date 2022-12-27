@@ -1,6 +1,8 @@
 
+let url = new URL('https://wiki-shop.onrender.com/categories/');
+
 if(!localStorage.getItem('categories')){ 
-    fetch('https://wiki-shop.onrender.com/categories/', {
+    fetch(url, {
         method: 'GET',
     })
     .then( (responseText) =>{
