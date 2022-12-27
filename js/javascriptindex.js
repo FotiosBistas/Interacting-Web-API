@@ -1,53 +1,43 @@
 
-var ourRequest = new XMLHttpRequest();
-ourRequest.open("GET", "https://wiki-shop.onrender.com/categories/");
 
+
+fetch('https://wiki-shop.onrender.com/categories/', {
+    method: 'GET',
+})
+.then( (responseText) =>{
+        if (responseText.status >= 200 && responseText.status <400){
+            return responseText.json(); 
+        }else{
+
+        }
+    }
+).then((data) => {
+    log(JSON.stringify(data));
+    addCategoryHTML(data);
+}).catch((err) => {
+    log(err); 
+})
 
 function log(text){
     var time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
-ourRequest.onload = function(event){
-    if (ourRequest.status >= 200 && ourRequest.status <400){
-        let categories = JSON.parse(ourRequest.responseText);
-        log(JSON.stringify(categories));
-        addCategoryHTML(categories);
-    }else{
-
-    }
-};
-
-ourRequest.onerror = function(event){
-    log(JSON.stringify(event));
-};
-
-ourRequest.send();
-
 function addCategoryHTML(data){
     var rawTemplate = document.getElementById("categories").innerHTML;
     var compiledTemplate = Handlebars.compile(rawTemplate);
     var ourHTML = compiledTemplate(data);
-    var categoriesTest = document.getElementById("show_categories");
-    categoriesTest.innerHTML = ourHTML;
+    var show_categories = document.getElementById("show_categories");
+    show_categories.innerHTML = ourHTML;
 }
-
 
 let categories = document.getElementById("show_categories");
 
-
-
 categories.onclick = function(event){
 
-    switch(event.target.id){
-        case "1": 
-            const searchParams = new URLSearchParams(`categories`);
-            break; 
-        case "2":
-            break; 
-        case "3": 
-            break; 
-        default: 
-            log("unknown area pressed"); 
-    }
+    if (event.target.id){
+        let params = new URLSearchParams(`/category.html?categoryId=${event.target.id}`);  
+        log(params); 
+    } 
+
 }

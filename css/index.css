@@ -1,3 +1,8 @@
+#show_categories{
+    display: flex; 
+    flex-wrap: wrap;
+}
+
 /* each category received by the web api will be applied this rule */
 .category-figure{
     background-color:  #fbfbfb;
