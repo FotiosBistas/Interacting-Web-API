@@ -42,7 +42,7 @@ fetch(url_subcategories, {
 }
 ).then((data) => {
     log(JSON.stringify(data));  
-    addProductsHTML(data); 
+    addSubCategoriesHTML(data); 
 }).catch((err) => {
     log(err); 
 }) 
@@ -55,9 +55,18 @@ function addProductsHTML(data){
     show_sub_categories.innerHTML = ourHTML;
 }
 
+function addSubCategoriesHTML(data){
+    let rawTemplate = document.getElementById("sub_categories").innerHTML;
+    let compiledTemplate = Handlebars.compile(rawTemplate);
+    let ourHTML = compiledTemplate(data);
+    let show_sub_categories = document.getElementById("products-aside");
+    show_sub_categories.innerHTML = ourHTML;
+}
+
 Handlebars.registerHelper('link', function(text, url, target) {
 
     return new Handlebars.SafeString(
       
     );
 }); 
+
