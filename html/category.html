@@ -31,6 +31,8 @@
         </script>
 
         <script id="sub_categories" type="text/x-handlebars-template">
+            <input type="radio" id="radioall" name="subcategories" value="radioall">
+            <label for="radioall">All</label><br>
             {{#each this}}
             <input type="radio" id="radio{{id}}" name="subcategories" value="radio{{id}}">
             <label for="radio{{id}}">{{title}}</label><br>
