@@ -25,7 +25,7 @@ fetch(url_subcategories_products, {
 }
 ).then((data) => {
     log(JSON.stringify(data));  
-    addHTML(data,"products","show_products"); 
+    addProductHTML(data); 
 }).catch((err) => {
     log(err); 
 }) 
@@ -42,23 +42,36 @@ fetch(url_subcategories, {
 }
 ).then((data) => {
     log(JSON.stringify(data));  
-    addHTML(data,"sub_categories","products-aside"); 
+    createRadio(data); 
 }).catch((err) => {
     log(err); 
 }) 
 
-function addHTML(data, templateId, placeId){
-    let rawTemplate = document.getElementById(templateId).innerHTML;
+function addProductHTML(data){
+    let rawTemplate = document.getElementById("products").innerHTML;
     let compiledTemplate = Handlebars.compile(rawTemplate);
     let ourHTML = compiledTemplate(data);
-    let outputHTML = document.getElementById(placeId);
+    let outputHTML = document.getElementById("show_products");
     outputHTML.innerHTML = ourHTML;
 }
 
-Handlebars.registerHelper('link', function(text, url, target) {
+function createRadio(options){
+    let rawTemplate = document.getElementById("createRadio").innerHTML;
+    let compiledTemplate = Handlebars.compile(rawTemplate);
+    let ourHTML = compiledTemplate({options});
+    let outputHTML = document.getElementById("products-aside");
+    outputHTML.innerHTML = ourHTML;
+}
 
-    return new Handlebars.SafeString(
-      
-    );
-}); 
 
+
+Handlebars.registerHelper('makeRadio', function(name, options){
+    let html = '';
+    for (let i = 0; i < options.length; i++) {
+        let option = options[i];
+        html += `
+        <label for="${option.id}">${option.title}</label>
+        <input type="radio" name="${name}" id="${option.id}">`
+    }
+    return new Handlebars.SafeString(html);
+});
