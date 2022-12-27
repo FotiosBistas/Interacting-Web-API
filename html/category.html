@@ -9,8 +9,19 @@
 
     <body>
         
-        <div id=""></div>
 
+         <!-- dynamically added with handlebars -->
+         <section id="show_sub_categories"></section>
+
+
+         <script id="categories" type="text/x-handlebars-template">
+             {{#each this}}
+                 <figure class="category-figure">
+                     <h2>{{title}}</h2>
+                     <a href="#"><img src="{{img_url}}"></a>
+                 </figure>
+             {{/each}}
+         </script>
 
         <script id="trial" type="text/x-handlebars-template">
             
