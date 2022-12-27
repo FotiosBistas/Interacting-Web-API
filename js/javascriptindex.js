@@ -1,21 +1,25 @@
 
+if(!localStorage.getItem('categories')){ 
+    fetch('https://wiki-shop.onrender.com/categories/', {
+        method: 'GET',
+    })
+    .then( (responseText) =>{
+            if (responseText.status >= 200 && responseText.status < 300){
+                return responseText.json(); 
+            }else{
 
-fetch('https://wiki-shop.onrender.com/categories/', {
-    method: 'GET',
-})
-.then( (responseText) =>{
-        if (responseText.status >= 200 && responseText.status < 300){
-            return responseText.json(); 
-        }else{
-
+            }
         }
-    }
-).then((data) => {
-    log(JSON.stringify(data));
-    addCategoryHTML(data);
-}).catch((err) => {
-    log(err); 
-})
+    ).then((data) => {
+        log(JSON.stringify(data));
+        localStorage.setItem('categories', JSON.stringify(data));
+        addCategoryHTML(data);
+    }).catch((err) => {
+        log(err); 
+    })
+}else{ 
+    addCategoryHTML(JSON.parse(localStorage.getItem('categories')));
+}
 
 
 
@@ -25,9 +29,9 @@ function log(text){
 }
 
 function addCategoryHTML(data){
-    var rawTemplate = document.getElementById("categories").innerHTML;
-    var compiledTemplate = Handlebars.compile(rawTemplate);
-    var ourHTML = compiledTemplate(data);
-    var show_categories = document.getElementById("show_categories");
+    let rawTemplate = document.getElementById("categories").innerHTML;
+    let compiledTemplate = Handlebars.compile(rawTemplate);
+    let ourHTML = compiledTemplate(data);
+    let show_categories = document.getElementById("show_categories");
     show_categories.innerHTML = ourHTML;
 }
