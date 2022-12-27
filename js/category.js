@@ -25,7 +25,7 @@ fetch(url_subcategories_products, {
 }
 ).then((data) => {
     log(JSON.stringify(data));  
-    addProductsHTML(data); 
+    addHTML(data,"products","show_products"); 
 }).catch((err) => {
     log(err); 
 }) 
@@ -42,25 +42,17 @@ fetch(url_subcategories, {
 }
 ).then((data) => {
     log(JSON.stringify(data));  
-    addSubCategoriesHTML(data); 
+    addHTML(data,"sub_categories","products-aside"); 
 }).catch((err) => {
     log(err); 
 }) 
 
-function addProductsHTML(data){
-    let rawTemplate = document.getElementById("products").innerHTML;
+function addHTML(data, templateId, placeId){
+    let rawTemplate = document.getElementById(templateId).innerHTML;
     let compiledTemplate = Handlebars.compile(rawTemplate);
     let ourHTML = compiledTemplate(data);
-    let show_sub_categories = document.getElementById("show_products");
-    show_sub_categories.innerHTML = ourHTML;
-}
-
-function addSubCategoriesHTML(data){
-    let rawTemplate = document.getElementById("sub_categories").innerHTML;
-    let compiledTemplate = Handlebars.compile(rawTemplate);
-    let ourHTML = compiledTemplate(data);
-    let show_sub_categories = document.getElementById("products-aside");
-    show_sub_categories.innerHTML = ourHTML;
+    let outputHTML = document.getElementById(placeId);
+    outputHTML.innerHTML = ourHTML;
 }
 
 Handlebars.registerHelper('link', function(text, url, target) {
