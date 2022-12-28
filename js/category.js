@@ -4,6 +4,8 @@ function log(text){
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+
+
 let params = new URLSearchParams(window.location.search);
 
 let categoryId = params.get('categoryId'); 
@@ -24,7 +26,7 @@ fetch(url_subcategories_products, {
     }
 }
 ).then((data) => {
-    log(JSON.stringify(data));  
+    localStorage.setItem('products', JSON.stringify(data));
     addProductHTML(data); 
 }).catch((err) => {
     log(err); 
@@ -67,19 +69,31 @@ let radio_container = document.getElementById('products-aside');
 
 radio_container.onclick = function(event){
     if(event.target.type == "radio"){
-        let children = document.getElementById("show_products").children;
+        let children = JSON.parse(localStorage.getItem('products'));
+
+        if(event.target.id == "radioall"){
+            let rawTemplate = document.getElementById("products").innerHTML;
+            let compiledTemplate = Handlebars.compile(rawTemplate);
+            let ourHTML = compiledTemplate(children);
+            let outputHTML = document.getElementById("show_products");
+            outputHTML.innerHTML = ourHTML;
+            return; 
+        }
+        
         let data = []; 
 
-        for (let i = 0; i < children.length; i++) {
-            let nobject = {}; 
-            nobject.id = children[i].id; 
-            nobject.subcategory_id = children[i].dataset.subcategory; 
-            nobject.title = children[i].getElementById(); 
-            nobject.cost = children[i].cost; 
-            nobject.description = children[i].description; 
-            data.push(nobject);
+        for(let i = 0; i < children.length; i++){
+            if(children[i].subcategory_id == event.target.id){
+                let object = {}; 
+                object.id = children[i].id; 
+                object.subcategory_id = children[i].subcategory; 
+                object.cost = children[i].cost; 
+                object.image = children[i].image; 
+                object.title = children[i].title;
+                object.description = children[i].description; 
+                data.push(object);
+            }
         }
-        products.innerHTML = ""; 
 
         let rawTemplate = document.getElementById("products").innerHTML;
         let compiledTemplate = Handlebars.compile(rawTemplate);
