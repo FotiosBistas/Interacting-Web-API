@@ -162,21 +162,40 @@ password_fieldset.onkeyup = function(event){
 
 let form = document.getElementById("register-form");
 
-form.addEventListener('submit', async function(event){
+form.addEventListener('submit',function(event){
     event.preventDefault(); 
     log("submitting");
 
+
     const formdata = new FormData(event.target); 
-    log(formdata.get('usernames'));
+    
+    let formDataObject = Object.fromEntries(formdata.entries());
+    let jsonFormData = JSON.stringify(formDataObject); 
+
+
+    let fetchOptions = {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        },
+        body: jsonFormData,
+    };
+
     let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
-    const response = await fetch(url, {
-        method: 'POST',
-        body: formdata,
-      })
+    const response = fetch(url, fetchOptions)
       .then((response) => {
-        // do something with the response
+        if(!response.ok){
+            let error = response.text(); 
+            throw new Error(error); 
+        }
+        return response.json(); 
+      })
+      .then((data) => {
+          log(JSON.stringify(data));
       })
       .catch((error) => {
-        // handle error
+        log(error);
       });
+    log(response);
 }); 
