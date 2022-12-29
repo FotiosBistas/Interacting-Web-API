@@ -10,16 +10,43 @@
 
     <body>
         
+        
         <div class="general_container">
-
             <!-- dynamically added with handlebars -->
             <aside id="products-aside"></aside>
-
+            
             <section id="show_products"></section>
+
+            <section id="register_form">
+
+                <form action="/LoginService" method="POST" id="register-form">
+                    <fieldset id="passwords-username">
+                        
+                        <legend>Login</legend>
+                        <div class="inputbox">
+                            <label for="username">Username</label>
+                            <input type="text" for="username" id="username" name="usernames" autocomplete="username">
+                        </div>
+                        <div class="inputbox">
+                            <label for="password">Password</label>
+                            <input type="text" id="password" name="passwords" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])((?=.*\W)|(?=.*_))^[^ ]+$" list="example_password">
+                        </div>
+                        <div class="inputbox">
+                            <label for="re-password">Re-enter password</label>
+                            <input type="text" id="re-password" name="re-passwords" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])((?=.*\W)|(?=.*_))^[^ ]+$">
+                        </div>
+                        <datalist id="example_password">
+                            <option>23423sdsdf==-+</option>
+                            <option>abcd23edf008</option>
+                        </datalist>
+                        <span id="match-message"></span>
+                        
+                    </fieldset>
+                </form>
+                <button type="submit" id="register_button" form="register-form" value="Submit"> Submit </button>
+            </section>
+            
         </div>
-        
-        
-       
 
         <script id="products" type="text/x-handlebars-template">
             {{#each this}}

@@ -1,7 +1,10 @@
 .general_container{
     display: grid; 
-    grid-template-columns: 1fr 3fr;
-    grid-template-areas: "aside products products";
+    grid-template-columns: 1fr 2fr;
+    grid-template-areas: 
+    "aside products products"
+    "form products products"
+    "form products products";
 }
 
 #show_products{
@@ -16,7 +19,23 @@
     border-radius: 20px;
     margin:10px;
     padding: 10px;
-    width: 30em;
+    width: 25em;
+    box-shadow: 0px 2px 5px #777;
+}
+
+.inputbox{
+    display: flex; 
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.inputbox input{
+    width:75%;
+    padding:10px;
+    border-radius: 10px;
     box-shadow: 0px 2px 5px #777;
 }
 
@@ -25,12 +44,40 @@
     top: 0;
     display: flex; 
     flex-direction: column;
-    height: fit-content;
+    height: fit-content; 
     margin-top: 0.2em;
     margin-bottom: 0.2em;
     box-shadow: 0px 2px 5px #777;
     background-color: #ffffff;
     grid-area: aside;
+}
+
+#register_form{
+    position: sticky;
+    top: 13em;
+    display: flex; 
+    flex-direction: column;
+    height: fit-content;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    box-shadow: 0px 2px 5px #777;
+    background-color: #ffffff;
+    grid-area: form;
+}
+
+button{
+    margin-top: 10px;
+    text-align: center;
+    width: fit-content;
+    align-self: center;
+    margin-left :auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 2px solid #646464;
+    font-size: large;
+    padding: 10px 20px;
+    transition: 0.8s;
 }
 
 .show_products_figure figcaption{

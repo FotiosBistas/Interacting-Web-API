@@ -10,6 +10,10 @@ let params = new URLSearchParams(window.location.search);
 
 let categoryId = params.get('categoryId'); 
 
+const local_server_port = 8080;
+const local_server_ip = "localhost";
+let server_url = local_server_ip + ":" + local_server_port; 
+
 let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/subcategories`); 
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);
 
@@ -103,6 +107,7 @@ radio_container.onclick = function(event){
     }
 }
 
+
 Handlebars.registerHelper('makeRadio', function(name, options){
     let html = '';
     for (let i = 0; i < options.length; i++) {
@@ -113,3 +118,65 @@ Handlebars.registerHelper('makeRadio', function(name, options){
     }
     return new Handlebars.SafeString(html);
 });
+
+
+let password_fieldset = document.getElementById("passwords-username"); 
+
+/**
+ * Whenever user leaves a key when entering a password the below validation methods
+ * are called 
+ * @param {*} event 
+ */
+password_fieldset.onkeyup = function(event){
+    if(event.target.id !== "password" && event.target.id !== "re-password"){
+        return; 
+    }
+    let message = document.getElementById('match-message'); 
+    let password_value = document.getElementById("password").value; 
+    let re_password_value = document.getElementById("re-password").value; 
+    //this regex pattern enforces the at least one restrictions 
+    let pattern = new RegExp(document.getElementById("password").getAttribute("pattern"));
+    if(!pattern.test(password_value) || password_value.length < 10){
+        message.style.color = 'red'; 
+        message.innerHTML = `password must have at least 10 characters,
+        at least one uppercase and lowercase letter, at least one special character
+        and at least one number and no spaces are allowed`;
+        event.target.setCustomValidity(`password must have at least 10 characters,
+        at least one uppercase and lowercase letter, at least one special character
+        and at least one number and no spaces are allowed`);
+    }
+    else if(password_value != re_password_value){
+        message.style.color = 'red'; 
+        message.innerHTML = "passwords don't match"
+        event.target.setCustomValidity("Passwords don't match");
+    }
+    else{
+        message.style.color = 'green'; 
+        message.innerHTML = "matching"
+        let re_password = document.getElementById("re-password");
+        let password = document.getElementById("password");
+        re_password.setCustomValidity(""); 
+        password.setCustomValidity("");
+    }
+}
+
+let form = document.getElementById("register-form");
+
+form.addEventListener('submit', async function(event){
+    event.preventDefault(); 
+    log("submitting");
+
+    const formdata = new FormData(event.target); 
+    log(formdata.get('usernames'));
+    let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
+    const response = await fetch(url, {
+        method: 'POST',
+        body: formdata,
+      })
+      .then((response) => {
+        // do something with the response
+      })
+      .catch((error) => {
+        // handle error
+      });
+}); 

@@ -22,7 +22,16 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }))
 
 // parse application/json content from body
-app.use(express.json())
+/* app.use(express.json()) */
+
+app.post('/LoginService', (request, response) => {
+
+    log("Received login service request");
+    const {username, password,re_password} = request.body; 
+    log("Received username: " + username + " and password: " + password + " and re-password: " + re_password);
+    //TODO call mongoDB 
+
+}); 
 
 app.get('/', (req, res) => {
     
