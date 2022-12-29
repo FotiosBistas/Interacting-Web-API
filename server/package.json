@@ -1,6 +1,28 @@
 {
+  "name": "server",
+  "version": "1.0.0",
+  "description": "node js server to interact with web api and mongodb database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FotiosBistas/Interacting-Web-API.git"
+  },
+  "keywords": [
+    "MongoDB",
+    "WebAPI"
+  ],
+  "author": "Fotis Bistas, Dimitris Poupos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FotiosBistas/Interacting-Web-API/issues"
+  },
+  "homepage": "https://github.com/FotiosBistas/Interacting-Web-API#readme",
   "dependencies": {
     "express": "^4.18.2",
+    "mongoose": "^6.8.1",
     "uuid": "^9.0.0"
   }
 }
