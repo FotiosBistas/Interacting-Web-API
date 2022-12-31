@@ -17,40 +17,48 @@ let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${cat
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);
 
 
+if(localStorage.getItem('products')){
+    fetch(url_subcategories_products, {
+        method: 'GET',
+    })
+    .then((responseText) =>{
+        if (responseText.status >= 200 && responseText.status < 300){
+            return responseText.json(); 
+        }else{
 
-fetch(url_subcategories_products, {
-    method: 'GET',
-})
-.then((responseText) =>{
-    if (responseText.status >= 200 && responseText.status < 300){
-        return responseText.json(); 
-    }else{
-
+        }
     }
+    ).then((data) => {
+        localStorage.setItem('products', JSON.stringify(data));
+        addProductHTML(data); 
+    }).catch((err) => {
+        log(err); 
+    }) 
+}else{
+    addProductHTML(JSON.parse(localStorage.getItem('products')));
 }
-).then((data) => {
-    localStorage.setItem('products', JSON.stringify(data));
-    addProductHTML(data); 
-}).catch((err) => {
-    log(err); 
-}) 
 
-fetch(url_subcategories, {
-    method: 'GET',
-})
-.then( (responseText) =>{
-    if (responseText.status >= 200 && responseText.status < 300){
-        return responseText.json(); 
-    }else{
+if(!localStorage.getItem('subcategories')){
+    fetch(url_subcategories, {
+        method: 'GET',
+    })
+    .then( (responseText) =>{
+        if (responseText.status >= 200 && responseText.status < 300){
+            return responseText.json(); 
+        }else{
 
+        }
     }
+    ).then((data) => {
+        log(JSON.stringify(data));  
+        localStorage.setItem('subcategories', JSON.stringify(data));
+        createRadio(data); 
+    }).catch((err) => {
+        log(err); 
+    }) 
+}else{
+    createRadio(JSON.parse(localStorage.getItem('subcategories')));
 }
-).then((data) => {
-    log(JSON.stringify(data));  
-    createRadio(data); 
-}).catch((err) => {
-    log(err); 
-}) 
 
 function addProductHTML(data){
     let rawTemplate = document.getElementById("products").innerHTML;
