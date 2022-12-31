@@ -1,10 +1,9 @@
 const express = require('express');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid'); 
-const mongoDBinteractions = require('./mongo.js'); 
+const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
 const app = express();
 const port = 8080;
-const cors = require("cors");
 
 let ___dirname = "../public"
 
@@ -23,8 +22,6 @@ app.listen(port, async () => {
     dbclient = await mongoDBinteractions.connect(); 
 });
 
-//cors to allow cross origin resource sharing
-app.use(cors());
 
 app.use(express.static('public'));
 
@@ -51,9 +48,10 @@ app.post('/LoginService',async (request, response) => {
 }); 
 
 app.get('/', (req, res) => {
+
     
     var options = {
-        root: path.join(__dirname, 'public')
+        root: path.join(___dirname, 'public'), 
     }
 
     res.sendFile('index.html', options, function(err){

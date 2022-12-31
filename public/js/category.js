@@ -10,9 +10,8 @@ let params = new URLSearchParams(window.location.search);
 
 let categoryId = params.get('categoryId'); 
 
-const local_server_port = 8080;
-const local_server_ip = "localhost";
-let server_url = local_server_ip + ":" + local_server_port; 
+
+let server_url = `${document.location.hostname}:${document.location.port}`; 
 
 let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/subcategories`); 
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);

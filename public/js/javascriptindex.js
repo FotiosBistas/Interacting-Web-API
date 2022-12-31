@@ -1,3 +1,17 @@
+let server_url = `${document.location.hostname}:${document.location.port}`; 
+
+let index_url = new URL(`${document.location.protocol}//${server_url}/`); 
+
+fetch(index_url,{
+    method: 'GET',
+}).then((response) => {
+    if(!response.ok){
+        log("Error: " + response.statusText);
+        alert(response.statusText);
+        return; 
+    }
+    return response.text(); 
+}).catch(err => log("Error: " + err + " while receiving html"));
 
 let url = new URL('https://wiki-shop.onrender.com/categories/');
 
