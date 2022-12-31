@@ -202,10 +202,11 @@ form.addEventListener('submit',function(event){
     })
     .then((data) => {
         log(JSON.stringify(data));
+        session_id = JSON.stringify(data); 
+        log("Your session id is: " + session_id);
         return data; 
     })
     .catch((error) => {
         log(error);
     });
-    log(response);
 }); 
