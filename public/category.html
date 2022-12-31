@@ -3,6 +3,8 @@
     <head>
         <title>category</title>
         <link rel="stylesheet" href="./css/category.css">
+        <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+        <script type="module" src="./js/category.js"></script> 
     </head>
     <header>
 
@@ -44,6 +46,7 @@
                     </fieldset>
                 </form>
                 <button type="submit" id="register_button" form="register-form" value="Submit"> Submit </button>
+                <span id="success-failure-connection-message"></span>
             </section>
             
         </div>
@@ -55,6 +58,7 @@
                     <h3 class="figure-cost">Cost: {{cost}} $</h3>
                     <a href="#"><img src="{{image}}"></a>
                     <figcaption class="figure-caption">{{description}}</figcaption>
+                    <button type="button" id="buy_button" value="Buy"> Buy </button>
                 </figure>
             {{/each}}
         </script>
@@ -65,8 +69,7 @@
             {{makeRadio "sub_categories" options}}
         </script>
 
-        <script src="./js/handlebars-v4.7.7.js"></script>
-        <script src="./js/category.js"></script> 
+     
         
     </body>
 </html>

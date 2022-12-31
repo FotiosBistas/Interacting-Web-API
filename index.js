@@ -31,6 +31,10 @@ app.use(express.urlencoded({ extended: false }));
 // parse application/json content from body
 app.use(express.json()) ;
 
+app.post('/CartItemService', async(request, response) => {
+    log(); 
+});
+
 app.post('/LoginService',async (request, response) => {
 
     log("Received login service request");
@@ -57,4 +61,5 @@ app.get('/', (req, res) => {
     res.sendFile('index.html', options, function(err){
         log(err)
     })
+
 })

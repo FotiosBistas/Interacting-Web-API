@@ -1,3 +1,4 @@
+import Product  from "../models/Product.js";
 
 function log(text){
     var time = new Date();
@@ -174,7 +175,7 @@ let form = document.getElementById("register-form");
 form.addEventListener('submit',function(event){
     event.preventDefault(); 
     log("submitting");
-
+    let message = document.getElementById("success-failure-connection-message"); 
 
     const formdata = new FormData(event.target); 
     
@@ -204,9 +205,30 @@ form.addEventListener('submit',function(event){
         log(JSON.stringify(data));
         session_id = JSON.stringify(data); 
         log("Your session id is: " + session_id);
+        message.innerHTML = "Successful connection"; 
         return data; 
     })
     .catch((error) => {
+        message.innerHTML = `Failed connection:${error}`; 
         log(error);
     });
 }); 
+
+
+let figures = document.getElementById("show_products");
+
+figures.onclick = function(event){
+    if(event.target.id === 'buy_button'){
+        if(!session_id){
+            alert("Please connect to the server before adding items to your cart"); 
+            return; 
+        }
+        let figure = event.target.parentElement;
+        let id = figure.id; 
+        let title = figure.dataset.title;
+        let cost = figure.dataset.cost; 
+        let subcategory_id = figure.dataset.subcategory_id; 
+        let product = new Product(id, title, cost, subcategory_id); 
+    }
+
+}
