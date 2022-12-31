@@ -1,9 +1,9 @@
-import Product  from "../models/Product.js";
 
 function log(text){
     var time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
+
 
 Handlebars.registerHelper('makeRadio', function(name, options){
     let html = '';
@@ -18,6 +18,7 @@ Handlebars.registerHelper('makeRadio', function(name, options){
 
 
 let session_id = null; 
+let cart = null; 
 
 let params = new URLSearchParams(window.location.search);
 
@@ -224,11 +225,43 @@ figures.onclick = function(event){
             return; 
         }
         let figure = event.target.parentElement;
-        let id = figure.id; 
-        let title = figure.dataset.title;
-        let cost = figure.dataset.cost; 
-        let subcategory_id = figure.dataset.subcategory_id; 
-        let product = new Product(id, title, cost, subcategory_id); 
+
+        let json_object = {
+            id: figure.id, 
+            title: figure.dataset.title, 
+            cost: figure.dataset.cost, 
+            subcategory_id: figure.dataset.subcategory_id
+        };
+
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            },
+            body: json_object,
+        };
+        let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
+
+        const response = fetch(url, fetchOptions)
+        .then((response) => {
+            if(!response.ok){
+                let error = response.text(); 
+                throw new Error(error); 
+            }
+            return response.json(); 
+        })
+        .then((data) => {
+            log(JSON.stringify(data));
+            session_id = JSON.stringify(data); 
+            log("Your session id is: " + session_id);
+            message.innerHTML = "Successful connection"; 
+            return data; 
+        })
+        .catch((error) => {
+            message.innerHTML = `Failed connection:${error}`; 
+            log(error);
+        });
     }
 
 }

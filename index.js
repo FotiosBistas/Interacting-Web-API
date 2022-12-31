@@ -32,7 +32,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()) ;
 
 app.post('/CartItemService', async(request, response) => {
-    log(); 
+    log("Received cart item service request");
+    
+    const {product_data, username, sessionId} = request.body; 
+    
 });
 
 app.post('/LoginService',async (request, response) => {
