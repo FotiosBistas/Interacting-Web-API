@@ -15,7 +15,7 @@ fetch(index_url,{
 
 let url = new URL('https://wiki-shop.onrender.com/categories/');
 
-if(!localStorage.getItem('categories')){ 
+if(!sessionStorage.getItem('categories')){ 
     fetch(url, {
         method: 'GET',
     })
@@ -28,13 +28,13 @@ if(!localStorage.getItem('categories')){
         }
     ).then((data) => {
         log(JSON.stringify(data));
-        localStorage.setItem('categories', JSON.stringify(data));
+        sessionStorage.setItem('categories', JSON.stringify(data));
         addCategoryHTML(data);
     }).catch((err) => {
         log(err); 
     })
 }else{ 
-    addCategoryHTML(JSON.parse(localStorage.getItem('categories')));
+    addCategoryHTML(JSON.parse(sessionStorage.getItem('categories')));
 }
 
 

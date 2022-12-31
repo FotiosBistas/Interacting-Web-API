@@ -4,7 +4,19 @@ function log(text){
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+Handlebars.registerHelper('makeRadio', function(name, options){
+    let html = '';
+    for (let i = 0; i < options.length; i++) {
+        let option = options[i];
+        html += `
+        <label for="${option.id}">${option.title}</label>
+        <input type="radio" data-category="${option.category_id}" name="${name}" id="${option.id}">`
+    }
+    return new Handlebars.SafeString(html);
+});
 
+
+let session_id = null; 
 
 let params = new URLSearchParams(window.location.search);
 
@@ -17,7 +29,7 @@ let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${cat
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);
 
 
-if(localStorage.getItem('products')){
+if(!sessionStorage.getItem('products')){
     fetch(url_subcategories_products, {
         method: 'GET',
     })
@@ -29,16 +41,16 @@ if(localStorage.getItem('products')){
         }
     }
     ).then((data) => {
-        localStorage.setItem('products', JSON.stringify(data));
+        sessionStorage.setItem('products', JSON.stringify(data));
         addProductHTML(data); 
     }).catch((err) => {
         log(err); 
     }) 
 }else{
-    addProductHTML(JSON.parse(localStorage.getItem('products')));
+    addProductHTML(JSON.parse(sessionStorage.getItem('products')));
 }
 
-if(!localStorage.getItem('subcategories')){
+if(!sessionStorage.getItem('subcategories')){   
     fetch(url_subcategories, {
         method: 'GET',
     })
@@ -51,14 +63,14 @@ if(!localStorage.getItem('subcategories')){
     }
     ).then((data) => {
         log(JSON.stringify(data));  
-        localStorage.setItem('subcategories', JSON.stringify(data));
+        sessionStorage.setItem('subcategories', JSON.stringify(data));
         createRadio(data); 
     }).catch((err) => {
         log(err); 
     }) 
-}else{
-    createRadio(JSON.parse(localStorage.getItem('subcategories')));
-}
+} else{
+    createRadio(JSON.parse(sessionStorage.getItem('subcategories')));
+}   
 
 function addProductHTML(data){
     let rawTemplate = document.getElementById("products").innerHTML;
@@ -80,7 +92,7 @@ let radio_container = document.getElementById('products-aside');
 
 radio_container.onclick = function(event){
     if(event.target.type == "radio"){
-        let children = JSON.parse(localStorage.getItem('products'));
+        let children = JSON.parse(sessionStorage.getItem('products'));
 
         if(event.target.id == "radioall"){
             let rawTemplate = document.getElementById("products").innerHTML;
@@ -112,19 +124,9 @@ radio_container.onclick = function(event){
         let outputHTML = document.getElementById("show_products");
         outputHTML.innerHTML = ourHTML;
     }
-}
+};
 
 
-Handlebars.registerHelper('makeRadio', function(name, options){
-    let html = '';
-    for (let i = 0; i < options.length; i++) {
-        let option = options[i];
-        html += `
-        <label for="${option.id}">${option.title}</label>
-        <input type="radio" data-category="${option.category_id}" name="${name}" id="${option.id}">`
-    }
-    return new Handlebars.SafeString(html);
-});
 
 
 let password_fieldset = document.getElementById("passwords-username"); 
@@ -191,18 +193,19 @@ form.addEventListener('submit',function(event){
 
     let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
     const response = fetch(url, fetchOptions)
-      .then((response) => {
+    .then((response) => {
         if(!response.ok){
             let error = response.text(); 
             throw new Error(error); 
         }
         return response.json(); 
-      })
-      .then((data) => {
-          log(JSON.stringify(data));
-      })
-      .catch((error) => {
+    })
+    .then((data) => {
+        log(JSON.stringify(data));
+        return data; 
+    })
+    .catch((error) => {
         log(error);
-      });
+    });
     log(response);
 }); 
