@@ -13,3 +13,6 @@ class UserInfo{
         return this.username; 
     }
 }
+
+
+module.exports = UserInfo;

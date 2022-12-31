@@ -19,6 +19,7 @@ Handlebars.registerHelper('makeRadio', function(name, options){
 
 let session_id = null; 
 let cart = null; 
+let username = null;
 
 let params = new URLSearchParams(window.location.search);
 
@@ -181,6 +182,7 @@ form.addEventListener('submit',function(event){
     const formdata = new FormData(event.target); 
     
     let formDataObject = Object.fromEntries(formdata.entries());
+    username = formDataObject.username; 
     let jsonFormData = JSON.stringify(formDataObject); 
 
 
@@ -230,8 +232,14 @@ figures.onclick = function(event){
             id: figure.id, 
             title: figure.dataset.title, 
             cost: figure.dataset.cost, 
-            subcategory_id: figure.dataset.subcategory_id
+            subcategory_id: figure.dataset.subcategory,
         };
+
+        let message = {
+            product_data: json_object, 
+            username: username, 
+            sessionId: session_id, 
+        }
 
         let fetchOptions = {
             method: "POST",
@@ -239,9 +247,9 @@ figures.onclick = function(event){
             "Content-Type": "application/json",
             Accept: "application/json",
             },
-            body: json_object,
+            body: JSON.stringify(message),
         };
-        let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
+        let url = new URL(document.location.protocol + "//" +  server_url + '/CartItemService'); 
 
         const response = fetch(url, fetchOptions)
         .then((response) => {
@@ -253,13 +261,9 @@ figures.onclick = function(event){
         })
         .then((data) => {
             log(JSON.stringify(data));
-            session_id = JSON.stringify(data); 
-            log("Your session id is: " + session_id);
-            message.innerHTML = "Successful connection"; 
             return data; 
         })
         .catch((error) => {
-            message.innerHTML = `Failed connection:${error}`; 
             log(error);
         });
     }

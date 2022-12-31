@@ -2,13 +2,15 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const uri = "mongodb+srv://Fotis:BF29EXoYjVirEvqB@auebmongodb.fnvhyhf.mongodb.net/?retryWrites=true&w=majority";
 
-
 function log(text){
     var time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
 module.exports = {
+
+
+    
 
     /**
      * Connects the server to the database cluster. 
@@ -36,17 +38,24 @@ module.exports = {
     /**
      * Finds if user is in the database with a registered password. 
      * @param {*} client the connection established with the mongodb cluster. 
-     * @param {*} user the user that is to be found. 
+     * @param {*} user the user that is to be found. {username, password}
      */
     isUserinDatabase: async function(client, user){
-        const found = await client.db("UserInfo").collection("Users").findOne({
-            username: user.username, 
-            password: user.password, 
-        }); 
+        let found = null; 
+        if(!('password' in user)){
+            found = await client.db("UserInfo").collection("Users").findOne({
+                username: user.username, 
+            }); 
+        }else{
+            found = await client.db("UserInfo").collection("Users").findOne({
+                username: user.username, 
+                password: user.password, 
+            }); 
+        }
         if(!found){
             return false; 
         }
-        return true; 
+        return found; 
     },
 
     removeUserFromDatabase: async function(client){
@@ -58,5 +67,44 @@ module.exports = {
         databasesList.databases.forEach(db => {
             log(`Listing database with name:- ${db.name}`);
         });
+    },
+
+
+
+    addProductToCart: async function(client, product, user){
+        const fuser = await this.isUserinDatabase(client, user);
+        const collection = client.db("UserInfo").collection("Users");
+        //if product exists increase quantity 
+        const newdoc = await collection.updateOne(
+            { _id: fuser._id, "cart.id": product.id },
+            { $inc: { "cart.$.quantity": 1 } }
+        );
+
+        if (newdoc.modifiedCount > 0) {
+            log("Increased quantity of product: " + product.title + " successfully");
+            return;
+        } 
+
+        log("Update failed");
+        const other = await collection.updateOne(
+            { _id: fuser._id},
+            {
+                $push: {
+                    cart: {
+                        id: product.id,
+                        title: product.title,
+                        cost: product.cost,
+                        subcategory_id: product.subcategory_id,
+                        quantity: 1
+                    }
+                },
+            },
+        );
+        if (other.modifiedCount > 0) {
+            log("Added new product to users cart: " + product.title + " successfully");
+            return;
+        } 
     }
+
+    
 }   

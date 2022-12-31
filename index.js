@@ -2,11 +2,12 @@ const express = require('express');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid'); 
 const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
+const activeUsers = require('./active-user-handler.js')
+const Product = require('./models/Product.js');
 const app = express();
 const port = 8080;
 
 let ___dirname = "../public"
-
 
 
 function log(text){
@@ -17,9 +18,10 @@ function log(text){
 var dbclient = null; 
 
 
-app.listen(port, async () => {
+const server = app.listen(port, async () => {
     log(`App listening on port ${port}`);
     dbclient = await mongoDBinteractions.connect(); 
+    log('Successfully connected to mongo db database');
 });
 
 
@@ -31,11 +33,18 @@ app.use(express.urlencoded({ extended: false }));
 // parse application/json content from body
 app.use(express.json()) ;
 
+
 app.post('/CartItemService', async(request, response) => {
     log("Received cart item service request");
     
     const {product_data, username, sessionId} = request.body; 
-    
+
+    if(!activeUsers.getUser(username)){
+        //return not authorized status 
+        response.status(401); 
+        return; 
+    }
+    const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
 });
 
 app.post('/LoginService',async (request, response) => {
@@ -47,6 +56,7 @@ app.post('/LoginService',async (request, response) => {
     const res = await mongoDBinteractions.isUserinDatabase(dbclient, {username, password});
     if(res){
         let successdata = {sessionId: uuidv4()};
+        activeUsers.addNewUser(username, successdata.sessionId);
         response.status(200).json(successdata); 
     }else{
         //return not authorized status 
@@ -56,7 +66,7 @@ app.post('/LoginService',async (request, response) => {
 
 app.get('/', (req, res) => {
 
-    
+    log("Received get request for index.html");
     var options = {
         root: path.join(___dirname, 'public'), 
     }
@@ -66,3 +76,16 @@ app.get('/', (req, res) => {
     })
 
 })
+
+
+process.on('SIGINT',async () => {
+    log('Received SIGINT signal, shutting down server...');
+    if(dbclient){
+        log('Shutting down database client');
+        dbclient.close();
+    }
+    server.close(() => {
+      log('Server shut down gracefully');
+      process.exit(0);
+    });
+  });
