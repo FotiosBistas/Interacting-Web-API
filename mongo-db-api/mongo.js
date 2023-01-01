@@ -69,7 +69,22 @@ module.exports = {
         });
     },
 
-
+    getCartListSize: async function(client, user){
+        const fuser = await this.isUserinDatabase(client, user); 
+        const collection  = client.db("UserInfo").collection("Users");
+        collection.aggregate(
+            [
+                {
+                    $match: {username: fuser.name}
+                },
+                {
+                    $project: {
+                      cartSize: { $size: "$cart" }
+                    }
+                }
+            ]
+        )
+    },
 
     addProductToCart: async function(client, product, user){
         const fuser = await this.isUserinDatabase(client, user);
@@ -104,6 +119,7 @@ module.exports = {
             log("Added new product to users cart: " + product.title + " successfully");
             return;
         } 
+        return true; 
     }
 
     

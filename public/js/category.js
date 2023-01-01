@@ -20,6 +20,7 @@ Handlebars.registerHelper('makeRadio', function(name, options){
 let session_id = null; 
 let cart = null; 
 let username = null;
+let cart_size = null; 
 
 let params = new URLSearchParams(window.location.search);
 
@@ -215,6 +216,36 @@ form.addEventListener('submit',function(event){
         message.innerHTML = `Failed connection:${error}`; 
         log(error);
     });
+
+    let newFetchOptions = {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+        },
+    };
+
+    let cart_size_url = new URL(document.location.protocol + "//" +  server_url + '/CartSizeService'); 
+    let cart_size_message = document.getElementById('cart-size');
+    const cz = fetch(cart_size_url, newFetchOptions)
+    .then((response) => {
+        if(!response.ok){
+            let error = response.text(); 
+            throw new Error(error); 
+        }
+        return response.json(); 
+    })
+    .then(data => {
+        log(JSON.stringify(data));
+        cart_size = JSON.stringify(data); 
+        log("Your cart size is: " + cart_size);
+        cart_size_message.innerHTML = "Cart size" + cart_size; 
+        return data; 
+    })
+    .catch((error) => {
+        cart_size_message.innerHTML = `Failed connection:${error}`; 
+        log(error);
+    });
+
 }); 
 
 

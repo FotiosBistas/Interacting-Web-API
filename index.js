@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
 const activeUsers = require('./active-user-handler.js')
 const Product = require('./models/Product.js');
+const { response } = require('express');
 const app = express();
 const port = 8080;
 
@@ -33,6 +34,19 @@ app.use(express.urlencoded({ extended: false }));
 // parse application/json content from body
 app.use(express.json()) ;
 
+app.get('/CartSizeService', async(request, response) => {
+    log("Received cart size service request");
+    const {username, sessionId} = request.body; 
+    
+    if(!activeUsers.getUser(username)){
+        //return not authorized status 
+        response.status(401); 
+        return; 
+    }
+
+    const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
+    
+});
 
 app.post('/CartItemService', async(request, response) => {
     log("Received cart item service request");
@@ -45,6 +59,11 @@ app.post('/CartItemService', async(request, response) => {
         return; 
     }
     const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
+    if(res){
+        response.status(200); 
+    }else{
+        response.status(500);
+    }
 });
 
 app.post('/LoginService',async (request, response) => {
