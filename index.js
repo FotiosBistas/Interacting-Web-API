@@ -34,11 +34,30 @@ app.use(express.urlencoded({ extended: false }));
 // parse application/json content from body
 app.use(express.json()) ;
 
+app.get('/CartRetrievalService', async(request,response)=> {
+    log("Received cart retrieval service request");
+    const {username, sessionId} = request.query; 
+
+    if(!(activeUsers.getUser(username) === sessionId)){
+        response.status(401); 
+        return; 
+    }
+
+    const res = await mongoDBinteractions.getProductsFromCart(dbclient, {username});
+
+    if(res){
+        response.status(200).json(res);
+        return; 
+    }
+
+    response.status(500); 
+});
+
 app.get('/CartSizeService', async(request, response) => {
     log("Received cart size service request");
     const {username, sessionId} = request.query; 
     
-    if(!activeUsers.getUser(username)){
+    if(!(activeUsers.getUser(username) === sessionId)){
         //return not authorized status 
         response.status(401); 
         return; 
@@ -57,7 +76,7 @@ app.post('/CartItemService', async(request, response) => {
     
     const {product_data, username, sessionId} = request.body; 
 
-    if(!activeUsers.getUser(username)){
+    if(!(activeUsers.getUser(username) === sessionId)){
         //return not authorized status 
         response.status(401); 
         return; 

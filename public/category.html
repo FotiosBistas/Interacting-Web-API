@@ -65,6 +65,10 @@
             {{/each}}
         </script>
 
+        <script id="cart-page" type="text/x-handlebars-template">
+            <a href="cart.html?username={{username}}&sessionId={{sessionId}}">Go to cart</a>
+        </script>
+
         <script id="createRadio" type="text/x-handlebars-template">
             <input type="radio" id="radioall" name="sub_categories" value="radioall" checked="checked">
             <label for="radioall">All</label><br>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>category</title>
+        <link rel="stylesheet" href="./css/cart.css">
+        <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js" defer></script>
+        <script src="./js/cart.js" defer></script> 
+    </head>
+    <body>
+
+        <section id="cart-list-container">
+            
+        </section>
+        <script id="cart-product-list" type="text/x-handlebars-template">
+            <table>
+                <tbody>
+                {{#each products}}
+                  <tr>
+                    <td>Title: {{title}}</td>
+                    <td>Cost: {{cost}}</td>
+                    <td>Quantity: {{quantity}}</td>
+                  </tr>
+                {{/each}}
+                <tr>
+                    <td>Total cost: {{totalCost}}</td>   
+                </tr>
+                </tbody>
+              </table>
+            
+        </script>
+    </body>
+</html>

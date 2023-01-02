@@ -84,6 +84,14 @@ function addProductHTML(data){
     outputHTML.innerHTML = ourHTML;
 }
 
+function addCartLink(data){
+    let rawTemplate = document.getElementById("cart-page").innerHTML;
+    let compiledTemplate = Handlebars.compile(rawTemplate);
+    let ourHTML = compiledTemplate(data);
+    let outputHTML = document.getElementById("cart-size");
+    outputHTML.innerHTML = ourHTML;
+}
+
 function createRadio(options){
     let rawTemplate = document.getElementById("createRadio").innerHTML;
     let compiledTemplate = Handlebars.compile(rawTemplate);
@@ -236,7 +244,8 @@ form.addEventListener('submit',function(event){
             log(JSON.stringify(data));
             cart_size = JSON.stringify(data); 
             log("Your cart size is: " + cart_size);
-            cart_size_message.innerHTML = "Cart size" + cart_size; 
+            addCartLink({username: username, sessionId: session_id.sessionId}); 
+            cart_size_message.append("Cart size" + cart_size); 
             return data; 
         })
         .catch((error) => {

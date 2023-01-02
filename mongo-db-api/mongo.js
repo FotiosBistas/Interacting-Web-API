@@ -91,6 +91,16 @@ module.exports = {
         return false;
     },
 
+    getProductsFromCart: async function(client, user){
+        const fuser = await this.isUserinDatabase(client, user);
+        const collection = client.db("UserInfo").collection("Users");
+        const res = await collection.findOne({"username": fuser.username}, { "cart": 1, "_id": 0 } )
+        if(res){
+            return res.cart; 
+        }
+        return false; 
+    },
+
     addProductToCart: async function(client, product, user){
         const fuser = await this.isUserinDatabase(client, user);
         const collection = client.db("UserInfo").collection("Users");
