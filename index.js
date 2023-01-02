@@ -37,8 +37,7 @@ app.use(express.json()) ;
 app.get('/CartRetrievalService', async(request,response)=> {
     log("Received cart retrieval service request");
     const {username, sessionId} = request.query; 
-
-    if(!(activeUsers.getUser(username) === sessionId)){
+    if((activeUsers.getUser(username) !== sessionId)){
         response.status(401); 
         return; 
     }
@@ -57,18 +56,23 @@ app.get('/CartSizeService', async(request, response) => {
     log("Received cart size service request");
     const {username, sessionId} = request.query; 
     
-    if(!(activeUsers.getUser(username) === sessionId)){
+    if(activeUsers.getUser(username) !== sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
-
-    const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
-    if(res){
-        response.status(200).json(res); 
-        return; 
+    try{
+        const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
+        if(res){
+            response.status(200).json(res); 
+            return; 
+        }
+    }catch(err){
+        log("Error: " + err + " while trying to retrieve cart size");
+        response.status(500).json(err); 
     }
-    response.status(500); 
+    
+    
 });
 
 app.post('/CartItemService', async(request, response) => {
@@ -76,7 +80,7 @@ app.post('/CartItemService', async(request, response) => {
     
     const {product_data, username, sessionId} = request.body; 
 
-    if(!(activeUsers.getUser(username) === sessionId)){
+    if(!(activeUsers.getUser(username) === sessionId.sessionId)){
         //return not authorized status 
         response.status(401); 
         return; 

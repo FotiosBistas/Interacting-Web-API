@@ -72,23 +72,28 @@ module.exports = {
     getCartListSize: async function(client, user){
         const fuser = await this.isUserinDatabase(client, user); 
         const collection  = client.db("UserInfo").collection("Users");
-        const cursor = collection.aggregate(
-            [
-                {
-                    $match: {username: fuser.username}
-                },
-                {
-                    $project: {
-                        cartSize: { $size: "$cart" }
+        let curson = null; 
+        try{
+            cursor = collection.aggregate(
+                [
+                    {
+                        $match: {username: fuser.username}
+                    },
+                    {
+                        $project: {
+                            cartSize: { $size: "$cart" }
+                        }
                     }
-                }
-            ]
-        );
+                ]
+            );
+        }catch(err){
+            throw new Error(err); 
+        }
         const results = await cursor.toArray();
         if(results.length > 0){
             return results[0].cartSize; 
         }
-        return false;
+        return 0;
     },
 
     getProductsFromCart: async function(client, user){
@@ -112,7 +117,7 @@ module.exports = {
 
         if (newdoc.modifiedCount > 0) {
             log("Increased quantity of product: " + product.title + " successfully");
-            return;
+            return true;
         } 
 
         log("Update failed");
@@ -132,9 +137,9 @@ module.exports = {
         );
         if (other.modifiedCount > 0) {
             log("Added new product to users cart: " + product.title + " successfully");
-            return;
+            return true;
         } 
-        return true; 
+        return false; 
     }
 
     
