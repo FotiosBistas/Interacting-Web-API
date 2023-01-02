@@ -195,7 +195,7 @@ form.addEventListener('submit',function(event){
         },
         body: jsonFormData,
     };
-
+    log("Sending login service request"); 
     let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
     const response = fetch(url, fetchOptions)
     .then((response) => {
@@ -207,9 +207,42 @@ form.addEventListener('submit',function(event){
     })
     .then((data) => {
         log(JSON.stringify(data));
-        session_id = JSON.stringify(data); 
+        session_id = data; 
         log("Your session id is: " + session_id);
-        message.innerHTML = "Successful connection"; 
+        message.innerHTML = "Successful connection";
+        log("Sending cart size service request");
+        const queryParams = {
+            username: formdata.get('username'),
+            sessionId: session_id.sessionId, 
+        };
+        const queryString = new URLSearchParams(queryParams).toString();
+        const cart_size_url = new URL(`${document.location.protocol}${server_url}/CartSizeService?${queryString}`);
+        let cart_size_message = document.getElementById('cart-size');
+        let newFetchOptions = {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+        };
+        const cz = fetch(cart_size_url, newFetchOptions)
+        .then((response) => {
+            if(!response.ok){
+                let error = response.text(); 
+                throw new Error(error); 
+            }
+            return response.json(); 
+        })
+        .then(data => {
+            log(JSON.stringify(data));
+            cart_size = JSON.stringify(data); 
+            log("Your cart size is: " + cart_size);
+            cart_size_message.innerHTML = "Cart size" + cart_size; 
+            return data; 
+        })
+        .catch((error) => {
+            cart_size_message.innerHTML = `Failed connection:${error}`; 
+            log(error);
+        }); 
         return data; 
     })
     .catch((error) => {
@@ -217,34 +250,7 @@ form.addEventListener('submit',function(event){
         log(error);
     });
 
-    let newFetchOptions = {
-        method: "GET",
-        headers: {
-            Accept: "application/json",
-        },
-    };
-
-    let cart_size_url = new URL(document.location.protocol + "//" +  server_url + '/CartSizeService'); 
-    let cart_size_message = document.getElementById('cart-size');
-    const cz = fetch(cart_size_url, newFetchOptions)
-    .then((response) => {
-        if(!response.ok){
-            let error = response.text(); 
-            throw new Error(error); 
-        }
-        return response.json(); 
-    })
-    .then(data => {
-        log(JSON.stringify(data));
-        cart_size = JSON.stringify(data); 
-        log("Your cart size is: " + cart_size);
-        cart_size_message.innerHTML = "Cart size" + cart_size; 
-        return data; 
-    })
-    .catch((error) => {
-        cart_size_message.innerHTML = `Failed connection:${error}`; 
-        log(error);
-    });
+    
 
 }); 
 

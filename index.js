@@ -36,7 +36,7 @@ app.use(express.json()) ;
 
 app.get('/CartSizeService', async(request, response) => {
     log("Received cart size service request");
-    const {username, sessionId} = request.body; 
+    const {username, sessionId} = request.query; 
     
     if(!activeUsers.getUser(username)){
         //return not authorized status 
@@ -45,7 +45,11 @@ app.get('/CartSizeService', async(request, response) => {
     }
 
     const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
-    
+    if(res){
+        response.status(200).json(res); 
+        return; 
+    }
+    response.status(500); 
 });
 
 app.post('/CartItemService', async(request, response) => {

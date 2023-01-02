@@ -72,18 +72,23 @@ module.exports = {
     getCartListSize: async function(client, user){
         const fuser = await this.isUserinDatabase(client, user); 
         const collection  = client.db("UserInfo").collection("Users");
-        collection.aggregate(
+        const cursor = collection.aggregate(
             [
                 {
-                    $match: {username: fuser.name}
+                    $match: {username: fuser.username}
                 },
                 {
                     $project: {
-                      cartSize: { $size: "$cart" }
+                        cartSize: { $size: "$cart" }
                     }
                 }
             ]
-        )
+        );
+        const results = await cursor.toArray();
+        if(results.length > 0){
+            return results[0].cartSize; 
+        }
+        return false;
     },
 
     addProductToCart: async function(client, product, user){
