@@ -34,6 +34,10 @@ app.use(express.urlencoded({ extended: false }));
 // parse application/json content from body
 app.use(express.json()) ;
 
+/**
+ * CartRetrievalService retrieves all the products from the specifed user's cart and 
+ * send thems as a json object. 
+ */
 app.get('/CartRetrievalService', async(request,response)=> {
     log("Received cart retrieval service request");
     const {username, sessionId} = request.query; 
@@ -52,6 +56,9 @@ app.get('/CartRetrievalService', async(request,response)=> {
     response.status(500); 
 });
 
+/**
+ * Cart size service retrieves all cart size of the specified user 
+ */
 app.get('/CartSizeService', async(request, response) => {
     log("Received cart size service request");
     const {username, sessionId} = request.query; 
@@ -75,16 +82,20 @@ app.get('/CartSizeService', async(request, response) => {
     
 });
 
+/**
+ * CartItemService add a new item to the user's cart or increases the quantity of the item 
+ */
 app.post('/CartItemService', async(request, response) => {
     log("Received cart item service request");
     
     const {product_data, username, sessionId} = request.body; 
 
-    if(!(activeUsers.getUser(username) === sessionId.sessionId)){
+    if(activeUsers.getUser(username).session_id !== sessionId.sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
+    
     const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
     if(res){
         response.status(200); 
@@ -93,16 +104,32 @@ app.post('/CartItemService', async(request, response) => {
     }
 });
 
+/**
+ * Login service receives a request from the login form of the user
+ * and tries to log in the user into the server based on the credentials given. 
+ * Assumes each request is a new user connection(no need to check if user is present already***)
+ */
 app.post('/LoginService',async (request, response) => {
 
     log("Received login service request");
     const {username, password, re_password} = request.body; 
     log("Received username: " + username + " and password: " + password + " and re-password: " + re_password);
-    //TODO call mongoDB 
+    //*** 
     const res = await mongoDBinteractions.isUserinDatabase(dbclient, {username, password});
     if(res){
         let successdata = {sessionId: uuidv4()};
-        activeUsers.addNewUser(username, successdata.sessionId);
+
+        // create user instance 
+        let new_active_user = activeUsers.createUserFromDatabaseEntry(
+            {
+               username: res.username, 
+               password: res.password, 
+               sessionId: successdata.sessionId, 
+            }, res.cart
+        ); 
+        // add user instance to current users 
+        activeUsers.addNewUser(new_active_user.username, new_active_user); 
+
         response.status(200).json(successdata); 
     }else{
         //return not authorized status 
@@ -134,4 +161,4 @@ process.on('SIGINT',async () => {
       log('Server shut down gracefully');
       process.exit(0);
     });
-  });
+});

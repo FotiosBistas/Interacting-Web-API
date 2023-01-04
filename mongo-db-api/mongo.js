@@ -7,10 +7,9 @@ function log(text){
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+// all mongodb interactions are encapsulated here 
 module.exports = {
 
-
-    
 
     /**
      * Connects the server to the database cluster. 
@@ -26,7 +25,7 @@ module.exports = {
     },
 
     /**
-     * Adds the user specified to the database. 
+     * Adds the user specified to the database. (not used)
      * @param {*} client he connection established with the mongodb cluster. 
      * @param {*} user the user that is to be inserted to the database. 
      */
@@ -36,30 +35,33 @@ module.exports = {
     },
 
     /**
-     * Finds if user is in the database with a registered password. 
+     * Finds if user is in the database with a registered password. (we assume usernames are unique) 
      * @param {*} client the connection established with the mongodb cluster. 
      * @param {*} user the user that is to be found. {username, password}
+     * @throws {*} throws error caught from the database interaction. 
+     * @returns {*} returns the user if found else it returns false. 
      */
     isUserinDatabase: async function(client, user){
         let found = null; 
-        if(!('password' in user)){
-            found = await client.db("UserInfo").collection("Users").findOne({
-                username: user.username, 
-            }); 
-        }else{
-            found = await client.db("UserInfo").collection("Users").findOne({
-                username: user.username, 
-                password: user.password, 
-            }); 
+        try{
+            if(!('password' in user)){
+                found = await client.db("UserInfo").collection("Users").findOne({
+                    username: user.username, 
+                }); 
+            }else{
+                found = await client.db("UserInfo").collection("Users").findOne({
+                    username: user.username, 
+                    password: user.password, 
+                }); 
+            }
+        }catch(err){
+            throw new Error(err); 
         }
+
         if(!found){
             return false; 
         }
         return found; 
-    },
-
-    removeUserFromDatabase: async function(client){
-
     },
 
     listDatabases: async function(client){
@@ -69,10 +71,17 @@ module.exports = {
         });
     },
 
+    /**
+     * Retrieve the cart list size of the user from the mongodatabase. 
+     * @param {*} client the database connection we have established 
+     * @param {*} user the user in the form of {username,password}
+     * @throws {*} throws the error caught from the aggregation function. 
+     * @returns 
+     */
     getCartListSize: async function(client, user){
         const fuser = await this.isUserinDatabase(client, user); 
         const collection  = client.db("UserInfo").collection("Users");
-        let curson = null; 
+        let cursor = null; 
         try{
             cursor = collection.aggregate(
                 [
@@ -96,16 +105,38 @@ module.exports = {
         return 0;
     },
 
+    /**
+     * Retrieves all the products from the user's cart inside the database. 
+     * @param {*} client  the database connection we have established  
+     * @param {*} user the user in the form of {username,password}
+     * @throws  throws the error caught from the query function. 
+     * @returns the cart if it is found else false 
+     */
     getProductsFromCart: async function(client, user){
-        const fuser = await this.isUserinDatabase(client, user);
-        const collection = client.db("UserInfo").collection("Users");
-        const res = await collection.findOne({"username": fuser.username}, { "cart": 1, "_id": 0 } )
-        if(res){
-            return res.cart; 
+        try{
+            const fuser = await this.isUserinDatabase(client, user);
+            const collection = client.db("UserInfo").collection("Users");
+            const res = await collection.findOne({"username": fuser.username}, { "cart": 1, "_id": 0 } )
+            if(res){
+                return res.cart; 
+            }
+            return false; 
+        }catch(err){
+            throw new Error(err); 
         }
-        return false; 
     },
 
+    processUserInfoandAddToDatabase: async function(userInfo){
+
+    },
+
+    /**
+     * 
+     * @param {*} client the database connection we have established 
+     * @param {*} product a product class instance 
+     * @param {*} user user in the form of {username,password}
+     * @returns 
+     */
     addProductToCart: async function(client, product, user){
         const fuser = await this.isUserinDatabase(client, user);
         const collection = client.db("UserInfo").collection("Users");
@@ -120,7 +151,8 @@ module.exports = {
             return true;
         } 
 
-        log("Update failed");
+        log("Did not increase quantity");
+        //if product doesn't exist add to cart 
         const other = await collection.updateOne(
             { _id: fuser._id},
             {
