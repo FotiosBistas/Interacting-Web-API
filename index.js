@@ -8,7 +8,7 @@ const port = 8080;
 
 let ___dirname = "../public"
 
-let batchWrites = false; 
+let batchWrites = true; 
 
 function log(text){
     var time = new Date();
@@ -47,7 +47,7 @@ app.get('/CartRetrievalService', async(request,response)=> {
         response.status(401); 
         return; 
     }
-    //if user instance not present fall back to database 
+    
     if(batchWrites){
         
         response.status(200).json(user_instance.cart.createJSONArray()); 
@@ -83,7 +83,6 @@ app.get('/CartSizeService', async(request, response) => {
         response.status(401); 
         return; 
     }
-    //if instance exists else fall back to database
     if(batchWrites){
         response.status(200).json(user_instance.cart.products.length); 
     }else{
@@ -120,7 +119,7 @@ app.post('/CartItemService', async(request, response) => {
         response.status(401); 
         return; 
     }
-    //if instance exists else fall back to database
+
     if(batchWrites){
         user_instance.cart.addNewProductFromJSON(product_data); 
     }else{
@@ -208,6 +207,9 @@ app.get('/', (req, res) => {
 
 process.on('SIGINT',async () => {
     log('Received SIGINT signal, shutting down server...');
+    if(batchWrites){
+        await activeUsers.addMultipleUserInfo(dbclient); 
+    }
     if(dbclient){
         log('Shutting down database client');
         dbclient.close();

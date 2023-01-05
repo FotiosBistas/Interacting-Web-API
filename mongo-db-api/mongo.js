@@ -134,22 +134,30 @@ module.exports = {
         }
     },
 
-    
+    /**
+     * Takes a user info class instance and adds into the database. 
+     * @param {*} client the database connection we have established 
+     * @param {*} userInfo a user info class instance 
+     * @returns True if the products are successfully added else returns false 
+     */
     processUserInfoandAddToDatabase: async function(client, userInfo){
-        const username = userInfo.username; 
-        const password = userInfo.password; 
+        try{
+            const collection = client.db("UserInfo").collection("Users");
+            // we don't need to check if prodcuts
+            const res = await collection.updateOne(
+                { _id: userInfo._id },
+                { $set: { cart: userInfo.cart.createJSONArray() } }
+            );
 
-        const collection = client.db("UserInfo").collection("Users");
-        // we don't need to check if prodcuts
-        const res = await collection.updateMany(
-            { _id: userInfo._id },
-            { $push: { cart: { $each: userInfo.cart.createJSONArray() } } },
-        );
-        if(res.modifiedCount > 0){
-            log("Successfully added new products")
-            return true; 
+            if(res.modifiedCount > 0){
+                log("Successfully added new products")
+                return true; 
+            }
+            return false; 
+        }catch(err){
+            log("Error: " + err + " while adding user info to database"); 
         }
-        return false; 
+        
     },
 
     /**

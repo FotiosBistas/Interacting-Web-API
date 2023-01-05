@@ -15,16 +15,27 @@ module.exports = {
      * @param {*} username the username to act as an identifier 
      * @param {*} userInfo userInfo class instance to be inserted 
      */
-    addNewUserInfo(username, userInfo, dbclient){
-        
+    async addNewUserInfo(username, userInfo, dbclient){
+        //if user exists already add their cart to the database 
         if(!(this.getUser(username))){
             activeUsers.set(username, userInfo); 
             return false; 
         }
+        await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, this.getUser(username)); 
         //this anyways removes the old user 
         activeUsers.set(username, userInfo); 
         //user exists add 
         return true; 
+    },
+
+    /**
+     * Adds multiple user info in the database 
+     * @param {*} dbclient the database connection established
+     */
+    async addMultipleUserInfo(dbclient){
+        for(const [key,value] of activeUsers.entries()){
+            await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, value);
+        }
     },
 
     /**
