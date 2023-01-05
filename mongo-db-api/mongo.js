@@ -74,19 +74,24 @@ module.exports = {
     /**
      * Retrieve the cart list size of the user from the mongodatabase. 
      * @param {*} client the database connection we have established 
-     * @param {*} user the user in the form of {username,password}
+     * @param {*} user the user in the form of {username,password, sessionId,_id, cart(boolean value)}
      * @throws {*} throws the error caught from the aggregation function. 
      * @returns 
      */
     getDatabaseCartListSize: async function(client, user){
         /* const fuser = await this.isUserinDatabase(client, user);  */
-        const collection  = client.db("UserInfo").collection("Users");
+        // Check if the `cart` field exists in the user's document
+        if(!user.cart){
+            return 0; 
+        }
         let cursor = null; 
         try{
+            const collection  = client.db("UserInfo").collection("Users");
+            
             cursor = collection.aggregate(
                 [
                     {
-                        $match: {username: user.username}
+                        $match: {_id: user._id}
                     },
                     {
                         $project: {
@@ -108,15 +113,18 @@ module.exports = {
     /**
      * Retrieves all the products from the user's cart inside the database. 
      * @param {*} client  the database connection we have established  
-     * @param {*} user the user in the form of {username,password}
+     * @param {*} user the user in the form of {username,password, sessionId,_id, cart(boolean value)}
      * @throws  throws the error caught from the query function. 
      * @returns the cart if it is found else false 
      */
     getProductsFromDatabaseCart: async function(client, user){
+        if(!user.cart){
+            return "No products exists in the cart"
+        }
         try{
             /* const fuser = await this.isUserinDatabase(client, user); */
             const collection = await client.db("UserInfo").collection("Users");
-            const res = await collection.findOne({"username": user.username}, { "cart": 1, "_id": 0 } )
+            const res = await collection.findOne({"_id": user._id}, { "cart": 1, "_id": 0 } )
             if(res.cart){
                 return res.cart; 
             }
@@ -130,27 +138,33 @@ module.exports = {
     processUserInfoandAddToDatabase: async function(client, userInfo){
         const username = userInfo.username; 
         const password = userInfo.password; 
-        /* const res = await this.isUserinDatabase(client, {username,password}); */
 
-    },
-
-    addProductClassInstanceToDatabaseCart: async function(){
-
+        const collection = client.db("UserInfo").collection("Users");
+        // we don't need to check if prodcuts
+        const res = await collection.updateMany(
+            { _id: userInfo._id },
+            { $push: { cart: { $each: userInfo.cart.createJSONArray() } } },
+        );
+        if(res.modifiedCount > 0){
+            log("Successfully added new products")
+            return true; 
+        }
+        return false; 
     },
 
     /**
-     * Adds product to user's cart inside the database 
+     * Adds product to user's cart inside the database. If the product exists it increases the quantity. 
+     * If the product doesn't exist it just inserts it into the cart 
      * @param {*} client the database connection we have established 
      * @param {*} product a product object {id,title,cost,subcategory_id}
-     * @param {*} user user in the form of {username,password}
-     * @returns 
+     * @param {*} user user in the form of {username,password, sessionId,_id, cart(boolean value)}
+     * @returns true if any of the two operations were successful else returns false 
      */
     addProductObjectDatabaseToCart: async function(client, product, user){
-        const fuser = await this.isUserinDatabase(client, user);
         const collection = client.db("UserInfo").collection("Users");
         //if product exists increase quantity 
         const newdoc = await collection.updateOne(
-            { _id: fuser._id, "cart.id": product.id },
+            { _id: user._id, "cart.id": product.id },
             { $inc: { "cart.$.quantity": 1 } }
         );
 
@@ -162,7 +176,7 @@ module.exports = {
         log("Did not increase quantity");
         //if product doesn't exist add to cart 
         const other = await collection.updateOne(
-            { _id: fuser._id},
+            { _id: user._id},
             {
                 $push: {
                     cart: {

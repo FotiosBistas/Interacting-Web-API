@@ -1,23 +1,29 @@
 const Cart = require("./Cart.js");
 
 class UserInfo{
-    #session_id;
+    #sessionId;
+    #_id
     #username;
     #password; 
     #cart; 
 
-    constructor(session_id, username, password,cart){
+    constructor(sessionId, _id,username, password,cart){
         if(!(cart instanceof Cart)){
             throw new Error("Not instance of cart"); 
         }
-        this.#session_id = session_id; 
+        this.#sessionId = sessionId; 
+        this.#_id = _id; 
         this.#username = username; 
         this.#password = password; 
         this.#cart = cart; 
     }
 
-    get session_id(){
-        return this.#session_id; 
+    get sessionId(){
+        return this.#sessionId; 
+    }
+
+    get _id(){
+        return this.#_id; 
     }
 
     get cart(){

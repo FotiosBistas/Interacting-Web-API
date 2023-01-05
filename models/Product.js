@@ -10,7 +10,12 @@ class Product{
         this.#title = title; 
         this.#cost = cost; 
         this.#subcategory_id = subcategory_id;
-        this.#quantity = 1; 
+        if(!quantity){
+            this.#quantity = 1;
+        }else{
+            this.#quantity = quantity; 
+        }
+         
         
     }
 

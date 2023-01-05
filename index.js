@@ -8,6 +8,7 @@ const port = 8080;
 
 let ___dirname = "../public"
 
+let batchWrites = false; 
 
 function log(text){
     var time = new Date();
@@ -42,18 +43,18 @@ app.get('/CartRetrievalService', async(request,response)=> {
 
     let user_instance = activeUsers.getUser(username);
 
-    if((user_instance.session_id !== sessionId)){
+    if((!user_instance || user_instance.sessionId !== sessionId)){
         response.status(401); 
         return; 
     }
     //if user instance not present fall back to database 
-    if(user_instance){
+    if(batchWrites){
         
         response.status(200).json(user_instance.cart.createJSONArray()); 
         return; 
     }else{  
         try{
-            const res = await mongoDBinteractions.getProductsFromDatabaseCart(dbclient, {username});
+            const res = await mongoDBinteractions.getProductsFromDatabaseCart(dbclient, user_instance);
 
             if(res){
                 response.status(200).json(res);
@@ -77,25 +78,28 @@ app.get('/CartSizeService', async(request, response) => {
     
     let user_instance = activeUsers.getUser(username); 
 
-    if(user_instance.session_id !== sessionId){
+    if(!user_instance || user_instance.sessionId !== sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
     //if instance exists else fall back to database
-    if(user_instance){
+    if(batchWrites){
         response.status(200).json(user_instance.cart.products.length); 
     }else{
         try{
-            const res = await mongoDBinteractions.getDatabaseCartListSize(dbclient, {username,sessionId});
+            const res = await mongoDBinteractions.getDatabaseCartListSize(dbclient, user_instance);
             if(res){
                 response.status(200).json(res); 
-                return; 
+            }else if(res == 0){
+                response.status(200).json(res); 
             }
-            throw new Error("Empty cart");
         }catch(err){
             log("Error: " + err + " while trying to retrieve cart size from db");
+            
             response.status(500).json(err); 
+            
+            
     }
 }
     
@@ -111,20 +115,25 @@ app.post('/CartItemService', async(request, response) => {
     
     let user_instance = activeUsers.getUser(username); 
 
-    if(user_instance.session_id !== sessionId.sessionId){
+    if(!user_instance || user_instance.sessionId !== sessionId.sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
     //if instance exists else fall back to database
-    if(user_instance){
+    if(batchWrites){
         user_instance.cart.addNewProductFromJSON(product_data); 
     }else{
-        const res = await mongoDBinteractions.addProductObjectToDatabaseCart(dbclient, product_data, {username,sessionId});
-        if(res){
-            response.status(200); 
-        }else{
-            response.status(500);
+        try{
+            const res = await mongoDBinteractions.addProductObjectDatabaseToCart(dbclient, product_data, user_instance);
+            if(res){
+                response.status(200); 
+                return; 
+            }
+            throw new Error("Failed to add or update collection"); 
+        }catch(err){
+            log("Error: " + err + " while trying to add or update collection");
+            response.status(500); 
         }
     }
 });
@@ -144,19 +153,35 @@ app.post('/LoginService',async (request, response) => {
         const res = await mongoDBinteractions.isUserinDatabase(dbclient, {username, password});
         if(res){
             let successdata = {sessionId: uuidv4()};
-    
-            // create user instance 
-            let new_active_user = activeUsers.createUserFromDatabaseEntry(
-                {
-                   username: res.username, 
-                   password: res.password, 
-                   sessionId: successdata.sessionId, 
-                }, res.cart
-            ); 
-            // add user instance to current users 
-            activeUsers.addNewUser(new_active_user.username, new_active_user); 
-            //send session id back to the user 
+            //if cart exists add boolean value to it 
+            let cart = false; 
+            if(res.cart){
+                cart = true; 
+            }
+            if(!batchWrites){
+                activeUsers.addNewUser(username, {
+                    _id: res._id, 
+                    username: res.username, 
+                    password: res.password, 
+                    cart: cart, 
+                    sessionId: successdata.sessionId, 
+                }); 
+            }else{
+                // create user instance 
+                let new_active_user = activeUsers.createUserFromDatabaseEntry(
+                    {
+                    username: res.username, 
+                    password: res.password, 
+                    _id: res._id, 
+                    sessionId: successdata.sessionId, 
+                    }, res.cart
+                ); 
+                // add user instance to current users 
+                activeUsers.addNewUserInfo(new_active_user.username, new_active_user, dbclient); 
+                //send session id back to the user 
+            }
             response.status(200).json(successdata); 
+
         }else{
             //return not authorized status 
             response.status(401); 

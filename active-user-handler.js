@@ -1,6 +1,7 @@
 const Cart = require("./models/Cart");
 const Product = require("./models/Product");
 const UserInfo = require("./models/UserInfo");
+const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
 
 const activeUsers = new Map(); 
 
@@ -14,7 +15,7 @@ module.exports = {
      * @param {*} username the username to act as an identifier 
      * @param {*} userInfo userInfo class instance to be inserted 
      */
-    addNewUser(username, userInfo){
+    addNewUserInfo(username, userInfo, dbclient){
         
         if(!(this.getUser(username))){
             activeUsers.set(username, userInfo); 
@@ -24,6 +25,16 @@ module.exports = {
         activeUsers.set(username, userInfo); 
         //user exists add 
         return true; 
+    },
+
+    /**
+     * Adds new user to the list of active users 
+     * @param {*} username the username of the user 
+     * @param {*} user_object the user object {username, password, sessionId, _id}
+     */
+    addNewUser(username, user_object){
+        //this anyways removes the old user 
+        activeUsers.set(username, user_object); 
     },
 
     /**
@@ -37,7 +48,7 @@ module.exports = {
 
     /**
      * Creates a user from the database entry received (res). 
-     * @param {*} user user an object with fields{username,sessionid,password} received from the mongodb instance 
+     * @param {*} user user an object with fields{username,sessionid,password,_id} received from the mongodb instance 
      * @param {*} cart the cart object received from the mongodb instance 
      * @returns {*} the user instance created based of the parameters given 
      */
@@ -51,10 +62,10 @@ module.exports = {
 
             let crt = new Cart(products); 
 
-            let usr = new UserInfo(user.sessionId,user.username,user.password, crt); 
+            let usr = new UserInfo(user.sessionId,user._id,user.username,user.password, crt); 
             return usr; 
         }else{
-            let usr = new UserInfo(user.sessionId, user.username, user.password, new Cart([])); 
+            let usr = new UserInfo(user.sessionId, user._id,user.username, user.password, new Cart([])); 
             return usr; 
         }
     },
