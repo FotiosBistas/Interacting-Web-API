@@ -11,6 +11,23 @@ class Cart{
     }   
 
     /**
+     * 
+     * @returns a json array based on the products inside the cart
+     */
+    createJSONArray(){
+        return this.products.map(prod => {
+            return {
+                id: prod.id, 
+                title: prod.title, 
+                cost: prod.cost, 
+                subcategory_id: prod.subcategory_id, 
+                quantity: prod.quantity, 
+            };
+        }); 
+    };
+    
+
+    /**
      * Gets a  list of products and adds them into the cart 
      * @param {*} Products a list of products to be inserted into the cart list array 
      */

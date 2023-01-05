@@ -48,20 +48,12 @@ app.get('/CartRetrievalService', async(request,response)=> {
     }
     //if user instance not present fall back to database 
     if(user_instance){
-        let products = user_instance.cart.products.map(prod => {
-            return {
-                id: prod.id, 
-                title: prod.title, 
-                cost: prod.cost, 
-                subcategory_id: prod.subcategory_id, 
-                quantity: prod.quantity, 
-            };
-        }); 
-        response.status(200).json(products);
+        
+        response.status(200).json(user_instance.cart.createJSONArray()); 
         return; 
     }else{  
         try{
-            const res = await mongoDBinteractions.getProductsFromCart(dbclient, {username});
+            const res = await mongoDBinteractions.getProductsFromDatabaseCart(dbclient, {username});
 
             if(res){
                 response.status(200).json(res);
@@ -95,7 +87,7 @@ app.get('/CartSizeService', async(request, response) => {
         response.status(200).json(user_instance.cart.products.length); 
     }else{
         try{
-            const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
+            const res = await mongoDBinteractions.getDatabaseCartListSize(dbclient, {username,sessionId});
             if(res){
                 response.status(200).json(res); 
                 return; 
@@ -128,7 +120,7 @@ app.post('/CartItemService', async(request, response) => {
     if(user_instance){
         user_instance.cart.addNewProductFromJSON(product_data); 
     }else{
-        const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
+        const res = await mongoDBinteractions.addProductObjectToDatabaseCart(dbclient, product_data, {username,sessionId});
         if(res){
             response.status(200); 
         }else{

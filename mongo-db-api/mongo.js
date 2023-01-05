@@ -78,15 +78,15 @@ module.exports = {
      * @throws {*} throws the error caught from the aggregation function. 
      * @returns 
      */
-    getCartListSize: async function(client, user){
-        const fuser = await this.isUserinDatabase(client, user); 
+    getDatabaseCartListSize: async function(client, user){
+        /* const fuser = await this.isUserinDatabase(client, user);  */
         const collection  = client.db("UserInfo").collection("Users");
         let cursor = null; 
         try{
             cursor = collection.aggregate(
                 [
                     {
-                        $match: {username: fuser.username}
+                        $match: {username: user.username}
                     },
                     {
                         $project: {
@@ -112,11 +112,11 @@ module.exports = {
      * @throws  throws the error caught from the query function. 
      * @returns the cart if it is found else false 
      */
-    getProductsFromCart: async function(client, user){
+    getProductsFromDatabaseCart: async function(client, user){
         try{
-            const fuser = await this.isUserinDatabase(client, user);
-            const collection = client.db("UserInfo").collection("Users");
-            const res = await collection.findOne({"username": fuser.username}, { "cart": 1, "_id": 0 } )
+            /* const fuser = await this.isUserinDatabase(client, user); */
+            const collection = await client.db("UserInfo").collection("Users");
+            const res = await collection.findOne({"username": user.username}, { "cart": 1, "_id": 0 } )
             if(res.cart){
                 return res.cart; 
             }
@@ -127,18 +127,25 @@ module.exports = {
     },
 
     
-    processUserInfoandAddToDatabase: async function(userInfo){
-        
+    processUserInfoandAddToDatabase: async function(client, userInfo){
+        const username = userInfo.username; 
+        const password = userInfo.password; 
+        /* const res = await this.isUserinDatabase(client, {username,password}); */
+
+    },
+
+    addProductClassInstanceToDatabaseCart: async function(){
+
     },
 
     /**
-     * 
+     * Adds product to user's cart inside the database 
      * @param {*} client the database connection we have established 
-     * @param {*} product a product class instance 
+     * @param {*} product a product object {id,title,cost,subcategory_id}
      * @param {*} user user in the form of {username,password}
      * @returns 
      */
-    addProductToCart: async function(client, product, user){
+    addProductObjectDatabaseToCart: async function(client, product, user){
         const fuser = await this.isUserinDatabase(client, user);
         const collection = client.db("UserInfo").collection("Users");
         //if product exists increase quantity 
