@@ -33,7 +33,7 @@ let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${cat
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);
 
 
-if(!sessionStorage.getItem('products')){
+if(!sessionStorage.getItem('products' + categoryId)){
     fetch(url_subcategories_products, {
         method: 'GET',
     })
@@ -45,16 +45,16 @@ if(!sessionStorage.getItem('products')){
         }
     }
     ).then((data) => {
-        sessionStorage.setItem('products', JSON.stringify(data));
+        sessionStorage.setItem('products' + categoryId, JSON.stringify(data));
         addProductHTML(data); 
     }).catch((err) => {
         log(err); 
     }) 
 }else{
-    addProductHTML(JSON.parse(sessionStorage.getItem('products')));
+    addProductHTML(JSON.parse(sessionStorage.getItem('products' + categoryId)));
 }
 
-if(!sessionStorage.getItem('subcategories')){   
+if(!sessionStorage.getItem('subcategories' + categoryId)){   
     fetch(url_subcategories, {
         method: 'GET',
     })
@@ -67,13 +67,13 @@ if(!sessionStorage.getItem('subcategories')){
     }
     ).then((data) => {
         log(JSON.stringify(data));  
-        sessionStorage.setItem('subcategories', JSON.stringify(data));
+        sessionStorage.setItem('subcategories' + categoryId, JSON.stringify(data));
         createRadio(data); 
     }).catch((err) => {
         log(err); 
     }) 
 } else{
-    createRadio(JSON.parse(sessionStorage.getItem('subcategories')));
+    createRadio(JSON.parse(sessionStorage.getItem('subcategories' + categoryId)));
 }   
 
 function addProductHTML(data){
@@ -104,7 +104,7 @@ let radio_container = document.getElementById('products-aside');
 
 radio_container.onclick = function(event){
     if(event.target.type == "radio"){
-        let children = JSON.parse(sessionStorage.getItem('products'));
+        let children = JSON.parse(sessionStorage.getItem('products' + categoryId));
 
         if(event.target.id == "radioall"){
             let rawTemplate = document.getElementById("products").innerHTML;
