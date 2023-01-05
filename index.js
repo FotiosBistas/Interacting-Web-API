@@ -3,8 +3,6 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid'); 
 const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
 const activeUsers = require('./active-user-handler.js')
-const Product = require('./models/Product.js');
-const { response } = require('express');
 const app = express();
 const port = 8080;
 
@@ -41,19 +39,41 @@ app.use(express.json()) ;
 app.get('/CartRetrievalService', async(request,response)=> {
     log("Received cart retrieval service request");
     const {username, sessionId} = request.query; 
-    if((activeUsers.getUser(username) !== sessionId)){
+
+    let user_instance = activeUsers.getUser(username);
+
+    if((user_instance.session_id !== sessionId)){
         response.status(401); 
         return; 
     }
-
-    const res = await mongoDBinteractions.getProductsFromCart(dbclient, {username});
-
-    if(res){
-        response.status(200).json(res);
+    //if user instance not present fall back to database 
+    if(user_instance){
+        let products = user_instance.cart.products.map(prod => {
+            return {
+                id: prod.id, 
+                title: prod.title, 
+                cost: prod.cost, 
+                subcategory_id: prod.subcategory_id, 
+                quantity: prod.quantity, 
+            };
+        }); 
+        response.status(200).json(products);
         return; 
-    }
+    }else{  
+        try{
+            const res = await mongoDBinteractions.getProductsFromCart(dbclient, {username});
 
-    response.status(500); 
+            if(res){
+                response.status(200).json(res);
+                return; 
+            }
+            throw new Error("Empty cart"); 
+        }catch(err){
+            log("Error: " + err + " while trying to retrieve products from cart inside the db")
+            response.status(500); 
+        }
+
+    }
 });
 
 /**
@@ -63,22 +83,29 @@ app.get('/CartSizeService', async(request, response) => {
     log("Received cart size service request");
     const {username, sessionId} = request.query; 
     
-    if(activeUsers.getUser(username) !== sessionId){
+    let user_instance = activeUsers.getUser(username); 
+
+    if(user_instance.session_id !== sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
-    try{
-        const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
-        if(res){
-            response.status(200).json(res); 
-            return; 
-        }
-    }catch(err){
-        log("Error: " + err + " while trying to retrieve cart size");
-        response.status(500).json(err); 
+    //if instance exists else fall back to database
+    if(user_instance){
+        response.status(200).json(user_instance.cart.products.length); 
+    }else{
+        try{
+            const res = await mongoDBinteractions.getCartListSize(dbclient, {username,sessionId});
+            if(res){
+                response.status(200).json(res); 
+                return; 
+            }
+            throw new Error("Empty cart");
+        }catch(err){
+            log("Error: " + err + " while trying to retrieve cart size from db");
+            response.status(500).json(err); 
     }
-    
+}
     
 });
 
@@ -89,18 +116,24 @@ app.post('/CartItemService', async(request, response) => {
     log("Received cart item service request");
     
     const {product_data, username, sessionId} = request.body; 
+    
+    let user_instance = activeUsers.getUser(username); 
 
-    if(activeUsers.getUser(username).session_id !== sessionId.sessionId){
+    if(user_instance.session_id !== sessionId.sessionId){
         //return not authorized status 
         response.status(401); 
         return; 
     }
-    
-    const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
-    if(res){
-        response.status(200); 
+    //if instance exists else fall back to database
+    if(user_instance){
+        user_instance.cart.addNewProductFromJSON(product_data); 
     }else{
-        response.status(500);
+        const res = await mongoDBinteractions.addProductToCart(dbclient, product_data, {username,sessionId});
+        if(res){
+            response.status(200); 
+        }else{
+            response.status(500);
+        }
     }
 });
 
@@ -114,26 +147,31 @@ app.post('/LoginService',async (request, response) => {
     log("Received login service request");
     const {username, password, re_password} = request.body; 
     log("Received username: " + username + " and password: " + password + " and re-password: " + re_password);
-    //*** 
-    const res = await mongoDBinteractions.isUserinDatabase(dbclient, {username, password});
-    if(res){
-        let successdata = {sessionId: uuidv4()};
-
-        // create user instance 
-        let new_active_user = activeUsers.createUserFromDatabaseEntry(
-            {
-               username: res.username, 
-               password: res.password, 
-               sessionId: successdata.sessionId, 
-            }, res.cart
-        ); 
-        // add user instance to current users 
-        activeUsers.addNewUser(new_active_user.username, new_active_user); 
-
-        response.status(200).json(successdata); 
-    }else{
-        //return not authorized status 
-        response.status(401); 
+    //*** retrieve user data 
+    try{
+        const res = await mongoDBinteractions.isUserinDatabase(dbclient, {username, password});
+        if(res){
+            let successdata = {sessionId: uuidv4()};
+    
+            // create user instance 
+            let new_active_user = activeUsers.createUserFromDatabaseEntry(
+                {
+                   username: res.username, 
+                   password: res.password, 
+                   sessionId: successdata.sessionId, 
+                }, res.cart
+            ); 
+            // add user instance to current users 
+            activeUsers.addNewUser(new_active_user.username, new_active_user); 
+            //send session id back to the user 
+            response.status(200).json(successdata); 
+        }else{
+            //return not authorized status 
+            response.status(401); 
+        }
+    }catch(err){
+        log("Error: " + err + " while trying to retrieve user data from database"); 
+        response.status(500);
     }
 }); 
 

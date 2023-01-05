@@ -117,7 +117,7 @@ module.exports = {
             const fuser = await this.isUserinDatabase(client, user);
             const collection = client.db("UserInfo").collection("Users");
             const res = await collection.findOne({"username": fuser.username}, { "cart": 1, "_id": 0 } )
-            if(res){
+            if(res.cart){
                 return res.cart; 
             }
             return false; 
@@ -126,8 +126,9 @@ module.exports = {
         }
     },
 
+    
     processUserInfoandAddToDatabase: async function(userInfo){
-
+        
     },
 
     /**

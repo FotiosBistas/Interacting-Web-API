@@ -9,34 +9,44 @@ class Product{
         this.#id = id; 
         this.#title = title; 
         this.#cost = cost; 
-        this.#subcategory_id = subcategory_id; 
-        this.#quantity = quantity; 
+        this.#subcategory_id = subcategory_id;
+        this.#quantity = 1; 
+        
     }
 
     /**
      * Returns the product id 
      */
-    get product_id(){
-        return this.product_id; 
+    get id(){
+        return this.#id; 
     }
 
     get title(){
-        return this.title; 
+        return this.#title; 
     }
     
     get cost(){
-        return this.cost; 
+        return this.#cost; 
+    }
+
+    get quantity(){
+        return this.#quantity; 
     }
     
-    get subcategory(){
-        return this.subcategory; 
+    get subcategory_id(){
+        return this.#subcategory_id; 
     }
 
     /**
      * Adds 1 to the quantity of the specific product 
      */
     addQuantity(){
-        this.quantity++; 
+        //if quantity exists add one 
+        if(this.#quantity){
+            this.#quantity++; 
+            return; 
+        }
+        this.#quantity = 1; 
     }
 }
 

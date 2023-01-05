@@ -43,13 +43,19 @@ module.exports = {
      */
     createUserFromDatabaseEntry(user, cart){
 
-        let products = cart.map(product => {
-            return new Product(product.id, product.title, product.cost, product.subcategory_id, product.quantity);  
-        });
+        if(cart){
+            let products = cart.map(product => {
+                return new Product(product.id, product.title, product.cost, product.subcategory_id, product.quantity);  
+            });
+            
 
-        let crt = new Cart(products); 
+            let crt = new Cart(products); 
 
-        let usr = new UserInfo(user.sessionId,user.username,user.password, crt); 
-        return usr; 
+            let usr = new UserInfo(user.sessionId,user.username,user.password, crt); 
+            return usr; 
+        }else{
+            let usr = new UserInfo(user.sessionId, user.username, user.password, new Cart([])); 
+            return usr; 
+        }
     },
 }

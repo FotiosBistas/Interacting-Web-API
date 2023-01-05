@@ -1,4 +1,4 @@
-const Cart = require("./Cart");
+const Cart = require("./Cart.js");
 
 class UserInfo{
     #session_id;

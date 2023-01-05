@@ -1,3 +1,5 @@
+const Product = require("./Product.js");
+
 class Cart{
     #products;
     constructor(products){
@@ -5,7 +7,7 @@ class Cart{
     }
 
     get products(){
-        return this.products; 
+        return this.#products; 
     }   
 
     /**
@@ -21,8 +23,10 @@ class Cart{
         });
     } 
 
-    addNewProductFromJSON(id, title, cost, subcategory_id, quantity){
-        let new_product = Product(); 
+    addNewProductFromJSON(product_data){
+        const {id,title,cost,subcategory_id, quantity} = product_data; 
+        let new_product = new Product(id, title, cost, subcategory_id, quantity); 
+        this.addNewProduct(new_product); 
     }
 
     /**
@@ -36,8 +40,8 @@ class Cart{
         
         //find the product based on id 
         let exists = this.products.find((prd) => {
-            if(prd.product_id() === product.product_id()){
-                return Product; 
+            if(prd.id === product.id){
+                return prd; 
             }
         });
 
@@ -45,7 +49,7 @@ class Cart{
         if(exists){
             exists.addQuantity(); 
         }else{
-            this.products.push(Product);
+            this.products.push(product);
         } 
     }
 }
