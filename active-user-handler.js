@@ -5,6 +5,11 @@ const mongoDBinteractions = require('./mongo-db-api/mongo.js');
 
 const activeUsers = new Map(); 
 
+function log(text){
+    var time = new Date();
+    console.log("[" + time.toLocaleTimeString() + "] " + text);
+}
+
 // utilities for current user session 
 // idea is to reduce writes to the database 
 module.exports = {
@@ -21,6 +26,7 @@ module.exports = {
             activeUsers.set(username, userInfo); 
             return false; 
         }
+        log("Adding new items of user: " + username + " items: " + JSON.stringify(userInfo.cart.createJSONArray()));
         await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, this.getUser(username)); 
         //this anyways removes the old user 
         activeUsers.set(username, userInfo); 
@@ -34,6 +40,7 @@ module.exports = {
      */
     async addMultipleUserInfo(dbclient){
         for(const [key,value] of activeUsers.entries()){
+            log("Adding new items of user: " + key + " items: " + JSON.stringify(value.cart.createJSONArray()));
             await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, value);
         }
     },
