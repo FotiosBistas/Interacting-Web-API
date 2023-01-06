@@ -1,7 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb'); 
 
 const uri = "mongodb+srv://Fotis:BF29EXoYjVirEvqB@auebmongodb.fnvhyhf.mongodb.net/?retryWrites=true&w=majority";
-
+//hi
 function log(text){
     var time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
