@@ -1,43 +1,92 @@
+//server url e.g. 127.0.0.1:8080 
 let server_url = `${document.location.hostname}:${document.location.port}`; 
-
 let index_url = new URL(`${document.location.protocol}//${server_url}/`); 
 
-fetch(index_url,{
-    method: 'GET',
-}).then((response) => {
-    if(!response.ok){
-        log("Error: " + response.statusText);
-        alert(response.statusText);
-        return; 
+/**
+ * Uses the fetch api to request html data from the server and retrieve them as html data
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @returns the data received 
+ */
+async function fetchAsyncHtml(url, options){
+    try{    
+        const response = await fetch(url, options);
+        
+        if(!response.ok){
+            throw new Error(response.statusText); 
+        } 
+
+        const data = await response.text(); 
+        return data; 
+    }catch(err){
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
     }
-    return response.text(); 
-}).catch(err => log("Error: " + err + " while receiving html"));
+}
+
+/**
+ * Uses the fetch api to request data from the server and retrieve them 
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @returns the data received 
+ */
+async function fetchAsync(url, options){
+    try{    
+        const response = await fetch(url, options);
+        
+        if(!response.ok){
+            throw new Error(response.statusText); 
+        } 
+
+        const data = await response.json(); 
+        return data; 
+    }catch(err){
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
+    }
+}
+
+/**
+ * Checks if the data is stored is the session storage else uses the fetchAsync function to retrieve the data. 
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @param {*} sessionStorageKey the key that the data will be stored for using session storage.
+ * @returns 
+ */
+async function getData(sessionStorageKey, url, options){
+    try {
+        // Check if data is already stored in sessionStorage
+        const data = sessionStorage.getItem(sessionStorageKey);
+        
+        if (data) {
+            return JSON.parse(data);
+        }
+    
+        // If data is not stored in sessionStorage, fetch it and store it
+        const response = await fetchAsync(url, options);
+        sessionStorage.setItem(sessionStorageKey, JSON.stringify(response));
+        return response;
+    } catch (err) {
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
+    }
+}
+
+const getHtmlFromWebServer = async() => {
+    await fetchAsyncHtml(index_url, {method:'GET'}); 
+};
+
+getHtmlFromWebServer(); 
+
 
 let url = new URL('https://wiki-shop.onrender.com/categories/');
 
-if(!sessionStorage.getItem('categories')){ 
-    fetch(url, {
-        method: 'GET',
-    })
-    .then( (responseText) =>{
-            if (responseText.status >= 200 && responseText.status < 300){
-                return responseText.json(); 
-            }else{
-
-            }
-        }
-    ).then((data) => {
-        log(JSON.stringify(data));
-        sessionStorage.setItem('categories', JSON.stringify(data));
-        addCategoryHTML(data);
-    }).catch((err) => {
-        log(err); 
-    })
-}else{ 
-    addCategoryHTML(JSON.parse(sessionStorage.getItem('categories')));
+const getProductCategoriesFromServer = async() => {
+    let data = await getData('categories', url, {method: 'GET'});
+    addCategoryHTML(data);
 }
 
-
+getProductCategoriesFromServer(); 
 
 function log(text){
     var time = new Date();

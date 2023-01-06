@@ -17,64 +17,90 @@ Handlebars.registerHelper('makeRadio', function(name, options){
 });
 
 
-let session_id = null; 
+let sessionId = null; 
 let cart = null; 
 let username = null;
-let cart_size = null; 
+let cartSize = null; 
 
+//url params contain categoryId: http://127.0.0.1:8080/category.html?categoryId=1
 let params = new URLSearchParams(window.location.search);
-
 let categoryId = params.get('categoryId'); 
 
-
+//server url e.g. 127.0.0.1:8080 
 let server_url = `${document.location.hostname}:${document.location.port}`; 
 
 let url_subcategories = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/subcategories`); 
 let url_subcategories_products = new URL(`https://wiki-shop.onrender.com/categories/${categoryId}/products`);
+let url_login_service = new URL(`${document.location.protocol}//${server_url}/LoginService`);
+let url_cart_item_service = new URL(`${document.location.protocol}//${server_url}/CartItemService`); 
 
+/**
+ * Uses the fetch api to request data from the server and retrieve them 
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @returns the data received 
+ */
+async function fetchAsync(url, options){
+    try{    
+        const response = await fetch(url, options);
+        
+        if(!response.ok){
+            throw new Error(response.statusText); 
+        } 
 
-if(!sessionStorage.getItem('products' + categoryId)){
-    fetch(url_subcategories_products, {
-        method: 'GET',
-    })
-    .then((responseText) =>{
-        if (responseText.status >= 200 && responseText.status < 300){
-            return responseText.json(); 
-        }else{
-
-        }
+        const data = await response.json(); 
+        return data; 
+    }catch(err){
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
     }
-    ).then((data) => {
-        sessionStorage.setItem('products' + categoryId, JSON.stringify(data));
-        addProductHTML(data); 
-    }).catch((err) => {
-        log(err); 
-    }) 
-}else{
-    addProductHTML(JSON.parse(sessionStorage.getItem('products' + categoryId)));
 }
 
-if(!sessionStorage.getItem('subcategories' + categoryId)){   
-    fetch(url_subcategories, {
-        method: 'GET',
-    })
-    .then( (responseText) =>{
-        if (responseText.status >= 200 && responseText.status < 300){
-            return responseText.json(); 
-        }else{
-
+/**
+ * Checks if the data is stored is the session storage else uses the fetchAsync function to retrieve the data. 
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @param {*} sessionStorageKey the key that the data will be stored for using session storage.
+ * @returns 
+ */
+async function getData(sessionStorageKey, url, options){
+    try {
+        // Check if data is already stored in sessionStorage
+        const data = sessionStorage.getItem(sessionStorageKey);
+        
+        if (data) {
+            return JSON.parse(data);
         }
+    
+        // If data is not stored in sessionStorage, fetch it and store it
+        const response = await fetchAsync(url, options);
+        sessionStorage.setItem(sessionStorageKey, JSON.stringify(response));
+        return response;
+    } catch (err) {
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
     }
-    ).then((data) => {
-        log(JSON.stringify(data));  
-        sessionStorage.setItem('subcategories' + categoryId, JSON.stringify(data));
-        createRadio(data); 
-    }).catch((err) => {
-        log(err); 
-    }) 
-} else{
-    createRadio(JSON.parse(sessionStorage.getItem('subcategories' + categoryId)));
-}   
+}
+
+
+const fetchSubcategoriesProducts = async () => {
+    const options = { method: "GET" };
+    const data = await getData('products' + categoryId, url_subcategories_products, options);
+
+    // Use the data to populate the list of products on the page
+    addProductHTML(data);
+  };
+  
+const fetchSubcategories = async () => {
+    const options = { method: "GET" };
+    const data = await getData('subcategories' + categoryId, url_subcategories, options);
+  
+    // Use the data to populate the list of products on the page
+    createRadio(data);
+  };
+  
+fetchSubcategoriesProducts();
+fetchSubcategories();
 
 function addProductHTML(data){
     let rawTemplate = document.getElementById("products").innerHTML;
@@ -89,7 +115,7 @@ function addCartLink(data){
     let compiledTemplate = Handlebars.compile(rawTemplate);
     let ourHTML = compiledTemplate(data);
     let outputHTML = document.getElementById("cart-size");
-    outputHTML.innerHTML = ourHTML;
+    outputHTML.innerHTML += ourHTML;
 }
 
 function createRadio(options){
@@ -102,10 +128,11 @@ function createRadio(options){
 
 let radio_container = document.getElementById('products-aside');
 
+//filter the products displayed using the radio 
 radio_container.onclick = function(event){
     if(event.target.type == "radio"){
         let children = JSON.parse(sessionStorage.getItem('products' + categoryId));
-
+        //display all the products 
         if(event.target.id == "radioall"){
             let rawTemplate = document.getElementById("products").innerHTML;
             let compiledTemplate = Handlebars.compile(rawTemplate);
@@ -116,7 +143,8 @@ radio_container.onclick = function(event){
         }
         
         let data = []; 
-
+        //display products based on the subcategory id 
+        //get their essential info from the dataset inside the figure 
         for(let i = 0; i < children.length; i++){
             if(children[i].subcategory_id == event.target.id){
                 let object = {}; 
@@ -183,7 +211,7 @@ password_fieldset.onkeyup = function(event){
 
 let form = document.getElementById("register-form");
 
-form.addEventListener('submit',function(event){
+form.addEventListener('submit', async function(event){
     event.preventDefault(); 
     log("submitting");
     let message = document.getElementById("success-failure-connection-message"); 
@@ -191,7 +219,7 @@ form.addEventListener('submit',function(event){
     const formdata = new FormData(event.target); 
     
     let formDataObject = Object.fromEntries(formdata.entries());
-    username = formDataObject.username; 
+
     let jsonFormData = JSON.stringify(formDataObject); 
 
 
@@ -203,84 +231,61 @@ form.addEventListener('submit',function(event){
         },
         body: jsonFormData,
     };
+
     log("Sending login service request"); 
-    let url = new URL(document.location.protocol + "//" +  server_url + '/LoginService'); 
-    const response = fetch(url, fetchOptions)
-    .then((response) => {
-        if(!response.ok){
-            let error = response.text(); 
-            throw new Error(error); 
-        }
-        return response.json(); 
-    })
-    .then((data) => {
-        log(JSON.stringify(data));
-        session_id = data; 
-        log("Your session id is: " + session_id);
-        message.innerHTML = "Successful connection";
-        log("Sending cart size service request");
-        const queryParams = {
-            username: formdata.get('username'),
-            sessionId: session_id.sessionId, 
-        };
-        const queryString = new URLSearchParams(queryParams).toString();
-        const cart_size_url = new URL(`${document.location.protocol}${server_url}/CartSizeService?${queryString}`);
-        let cart_size_message = document.getElementById('cart-size');
-        let newFetchOptions = {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-            },
-        };
-        const cz = fetch(cart_size_url, newFetchOptions)
-        .then((response) => {
-            if(!response.ok){
-                let error = response.text(); 
-                throw new Error(error); 
-            }
-            return response.json(); 
-        })
-        .then(data => {
-            log(JSON.stringify(data));
-            cart_size = JSON.stringify(data); 
-            log("Your cart size is: " + cart_size);
-            addCartLink({username: username, sessionId: session_id.sessionId}); 
-            cart_size_message.append("Cart size" + cart_size); 
-            return data; 
-        })
-        .catch((error) => {
-            cart_size_message.innerHTML = `Failed connection:${error}`; 
-            log(error);
-        }); 
-        return data; 
-    })
-    .catch((error) => {
-        message.innerHTML = `Failed connection:${error}`; 
-        log(error);
-    });
+     
+    let login_service_server_response = await fetchAsync(url_login_service, fetchOptions); 
+    log("Server responded after login request: " + JSON.stringify(login_service_server_response));
+    sessionId = login_service_server_response.sessionId; 
+    message.innerHTML = "Successfull connection with session id: " + sessionId; 
+    log("Sending cart size service request");
+    const queryParams = {
+        username: formdata.get('username'),
+        sessionId: login_service_server_response.sessionId, 
+    };
 
-    
+    const queryString = new URLSearchParams(queryParams).toString();
+    log("Created query string: " + queryString); 
 
+    const cart_size_url = new URL(`${document.location.protocol}${server_url}/CartSizeService?${queryString}`);
+
+    let cart_size_message = document.getElementById('cart-size');
+
+    let newFetchOptions = {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+        },
+    };
+
+    let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
+    cartSize = cart_size_server_response; 
+    cart_size_message.innerHTML = 'Cart size: ' + cartSize;
+    log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
+
+    username = formDataObject.username; 
+    addCartLink({username: username, sessionId: sessionId}); 
 }); 
 
 
 let figures = document.getElementById("show_products");
 
-figures.onclick = function(event){
+figures.onclick = async function(event){
+    //event delegation on the buy button displayed with each figure 
     if(event.target.id === 'buy_button'){
         if(!session_id){
             alert("Please connect to the server before adding items to your cart"); 
             return; 
         }
         let figure = event.target.parentElement;
-
+        //using the figure's dataset get the important data to add to cart 
         let json_object = {
             id: figure.id, 
             title: figure.dataset.title, 
             cost: figure.dataset.cost, 
             subcategory_id: figure.dataset.subcategory,
         };
-
+        //construct the required message to send to server 
         let message = {
             product_data: json_object, 
             username: username, 
@@ -295,23 +300,9 @@ figures.onclick = function(event){
             },
             body: JSON.stringify(message),
         };
-        let url = new URL(document.location.protocol + "//" +  server_url + '/CartItemService'); 
+        
 
-        const response = fetch(url, fetchOptions)
-        .then((response) => {
-            if(!response.ok){
-                let error = response.text(); 
-                throw new Error(error); 
-            }
-            return response.json(); 
-        })
-        .then((data) => {
-            log(JSON.stringify(data));
-            return data; 
-        })
-        .catch((error) => {
-            log(error);
-        });
+        let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
     }
 
 }

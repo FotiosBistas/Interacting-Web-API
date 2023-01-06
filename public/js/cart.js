@@ -12,7 +12,32 @@ const queryString = new URLSearchParams(params).toString();
 
 let server_url = `${document.location.hostname}:${document.location.port}`; 
 
+
+
+/**
+ * Uses the fetch api to request data from the server and retrieve them 
+ * @param {*} url the url we want to retrieve the data from 
+ * @param {*} options the options that are specified in the http header 
+ * @returns the data received 
+ */
+async function fetchAsync(url, options){
+    try{    
+        const response = await fetch(url, options);
+        
+        if(!response.ok){
+            throw new Error(response.statusText); 
+        } 
+
+        const data = await response.json(); 
+        return data; 
+    }catch(err){
+        log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
+        alert(err);
+    }
+}
+
 let url = new URL(`${document.location.protocol}/${server_url}/CartRetrievalService?${queryString}`); 
+
 
 let fetch_options = {
     method: "GET",
@@ -21,25 +46,15 @@ let fetch_options = {
     },
 };
 
-fetch(url, fetch_options)
-.then( (response) => {
-    if(!response.ok){
-        let error = response.text(); 
-        throw new Error(error); 
-    }
-    return response.json();
-})
-.then(data => {
-    log(JSON.stringify(data))
+const getProductsFromCart = async() => {
+    let data = fetchAsync(url, fetch_options); 
     let totalCost = 0;
     data.forEach(item => {
         totalCost += +item.cost;
     });
     makeCartList(data, totalCost);
-})
-.catch(err => {
-    log(err); 
-});
+};
+
 
 function makeCartList(data, totalCost){
     let rawTemplate = document.getElementById("cart-product-list").innerHTML;
