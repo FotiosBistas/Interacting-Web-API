@@ -142,18 +142,22 @@ module.exports = {
      */
     processUserInfoandAddToDatabase: async function(client, userInfo){
         try{
-            const collection = client.db("UserInfo").collection("Users");
-            // we don't need to check if prodcuts
-            const res = await collection.updateOne(
-                { _id: userInfo._id },
-                { $set: { cart: userInfo.cart.createJSONArray() } }
-            );
-
-            if(res.modifiedCount > 0){
-                log("Successfully added new products")
-                return true; 
+            let products = userInfo.cart.createJSONArray();
+            let user = {
+                username: userInfo.username, 
+                password: userInfo.password, 
+                sessionId: userInfo.sessionId, 
+                _id: userInfo._id, 
+            };
+            for(const product of products){
+                log("Adding product: " + JSON.stringify(product) + " to database");
+                let op = await this.addProductObjectDatabaseToCart(client,product, user);  
+                if(op){
+                    log("Success adding or updating product: " + JSON.stringify(product) + " to database");
+                }else{
+                    log("Failed adding or updating product: " + JSON.stringify(product) + " to database");
+                }   
             }
-            return false; 
         }catch(err){
             log("Error: " + err + " while adding user info to database"); 
         }
@@ -171,10 +175,25 @@ module.exports = {
     addProductObjectDatabaseToCart: async function(client, product, user){
         const collection = client.db("UserInfo").collection("Users");
         //if product exists increase quantity 
-        const newdoc = await collection.updateOne(
-            { _id: user._id, "cart.id": product.id },
-            { $inc: { "cart.$.quantity": 1 } }
-        );
+        let quantity = 1; 
+        let newdoc = null; 
+        if('quantity' in product){
+            quantity = product.quantity;
+            //if quantity is present meaning the class cart instance is running
+            //all the addition operations are running locally so you must $set 
+            newdoc = await collection.updateOne(
+                { _id: user._id, "cart.id": product.id },
+                { $set: { "cart.$.quantity": quantity } }
+            ); 
+        }else{
+            //if quantity is not present meaning the class cart instance is not running
+            //all the addition operations are not running locally so you must $inc 
+            newdoc = await collection.updateOne(
+                { _id: user._id, "cart.id": product.id },
+                { $inc: { "cart.$.quantity": quantity } }
+            ); 
+        }
+        
 
         if (newdoc.modifiedCount > 0) {
             log("Increased quantity of product: " + product.title + " successfully");
@@ -192,7 +211,7 @@ module.exports = {
                         title: product.title,
                         cost: product.cost,
                         subcategory_id: product.subcategory_id,
-                        quantity: 1
+                        quantity: quantity
                     }
                 },
             },

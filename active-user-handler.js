@@ -26,10 +26,13 @@ module.exports = {
             activeUsers.set(username, userInfo); 
             return false; 
         }
-        log("Adding new items of user: " + username + " items: " + JSON.stringify(userInfo.cart.createJSONArray()));
-        await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, this.getUser(username)); 
+        let old = this.getUser(username);
+        log("Adding new items of user: " + username + " items: " + JSON.stringify(old.cart.createJSONArray()));
         //this anyways removes the old user 
         activeUsers.set(username, userInfo); 
+
+        await mongoDBinteractions.processUserInfoandAddToDatabase(dbclient, old); 
+        
         //user exists add 
         return true; 
     },
@@ -51,6 +54,7 @@ module.exports = {
      * @param {*} user_object the user object {username, password, sessionId, _id}
      */
     addNewUser(username, user_object){
+        log("Setting active users with simple json object");
         //this anyways removes the old user 
         activeUsers.set(username, user_object); 
     },
