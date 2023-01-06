@@ -47,7 +47,7 @@ let fetch_options = {
 };
 
 const getProductsFromCart = async() => {
-    let data = fetchAsync(url, fetch_options); 
+    let data = await fetchAsync(url, fetch_options); 
     let totalCost = 0;
     data.forEach(item => {
         totalCost += +item.cost;
@@ -55,6 +55,7 @@ const getProductsFromCart = async() => {
     makeCartList(data, totalCost);
 };
 
+getProductsFromCart(); 
 
 function makeCartList(data, totalCost){
     let rawTemplate = document.getElementById("cart-product-list").innerHTML;
