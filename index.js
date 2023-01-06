@@ -46,7 +46,7 @@ app.get('/CartRetrievalService', async(request,response)=> {
 
     if((!user_instance || user_instance.sessionId !== sessionId)){
         log("User instance was null or local session id was different that the one received"); 
-        response.status(401); 
+        response.status(401).json("User instance was null or local session id was different that the one received"); 
         return; 
     }
     
@@ -66,7 +66,7 @@ app.get('/CartRetrievalService', async(request,response)=> {
             throw new Error("Empty cart"); 
         }catch(err){
             log("Error: " + err + " while trying to retrieve products from cart inside the db")
-            response.status(500); 
+            response.status(500).json(err); 
         }
 
     }
@@ -86,7 +86,7 @@ app.get('/CartSizeService', async(request, response) => {
         //return not authorized status 
         log("User instance was null or local session id was different that the one received"); 
 
-        response.status(401); 
+        response.status(401).json("User instance was null or local session id was different that the one received");
         return; 
     }
     if(batchWrites){
@@ -126,7 +126,7 @@ app.post('/CartItemService', async(request, response) => {
     if(!user_instance || user_instance.sessionId !== sessionId){
         //return not authorized status
         log("User instance was null or local session id was different that the one received"); 
-        response.status(401); 
+        response.status(401).json("User instance was null or local session id was different that the one received"); 
         return; 
     }
 
@@ -178,7 +178,6 @@ app.post('/LoginService',async (request, response) => {
                     cart: cart, 
                     sessionId: successdata.sessionId, 
                 }); 
-                log("Added new user successfully");
             }else{
                 // create user instance 
                 let new_active_user = activeUsers.createUserFromDatabaseEntry(
