@@ -12,21 +12,26 @@
             
         </section>
         <script id="cart-product-list" type="text/x-handlebars-template">
-            <table>
+            <table class="content-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Cost</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
                 <tbody>
                 {{#each products}}
                   <tr>
-                    <td>Title: {{title}}</td>
-                    <td>Cost: {{cost}}</td>
-                    <td>Quantity: {{quantity}}</td>
+                    <td>{{title}}</td>
+                    <td>{{cost}}</td>
+                    <td>{{quantity}}</td>
                   </tr>
                 {{/each}}
-                <tr>
-                    <td>Total cost: {{totalCost}}</td>   
-                </tr>
+                
                 </tbody>
               </table>
-            
+            <p><h3>Total cost: {{totalCost}}</h3></p>
         </script>
     </body>
 </html>
