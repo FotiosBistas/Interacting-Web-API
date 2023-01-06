@@ -64,7 +64,7 @@ body{
 }
 #products-aside label{
     padding:8px 14px;
-    background-color: #c7c7c7dd;
+    background-color: #3444efdd;
     
 }
 #products-aside label:hover{
@@ -103,7 +103,7 @@ button:hover{
     cursor: pointer;
 }
 .show_products_figure figcaption{
-    background-color: #c7c7c7dd;
+    background-color: #3444efdd;
     border-radius: 10px;
     max-width: 100%;
     padding: 10px;
@@ -118,3 +118,11 @@ button:hover{
     max-width: 100%;
 }
 
+a {
+    background-color: #3444efdd;
+    color: white;
+    padding: 1em 1.5em;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-radius: 15px;
+}
