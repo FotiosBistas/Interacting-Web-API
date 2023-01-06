@@ -1,5 +1,8 @@
 const Product = require("./Product.js");
-
+function log(text){
+    var time = new Date();
+    console.log("[" + time.toLocaleTimeString() + "] " + text);
+}
 class Cart{
     #products;
     constructor(products){
@@ -15,6 +18,7 @@ class Cart{
      * @returns a json array based on the products inside the cart
      */
     createJSONArray(){
+        log("Creating json array from cart products");
         return this.products.map(prod => {
             return {
                 id: prod.id, 
@@ -41,6 +45,7 @@ class Cart{
     } 
 
     addNewProductFromJSON(product_data){
+        log("Adding new product into cart instance from json");
         const {id,title,cost,subcategory_id, quantity} = product_data; 
         let new_product = new Product(id, title, cost, subcategory_id, quantity); 
         this.addNewProduct(new_product); 
@@ -64,8 +69,10 @@ class Cart{
 
         //if it exists add 1 to the quantity 
         if(exists){
+            log("Found that product exists and adding quantity");
             exists.addQuantity(); 
         }else{
+            log("Pushing new product into cart");
             this.products.push(product);
         } 
     }

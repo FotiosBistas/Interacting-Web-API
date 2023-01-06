@@ -87,7 +87,7 @@ getHtmlFromWebServer();
 let url = new URL('https://wiki-shop.onrender.com/categories/');
 
 const getProductCategoriesFromServer = async() => {
-    let data = await getData('categories', url, {method: 'GET'});
+    let data = await getData('categories', url, {method: 'GET',"headers":{"Accept":"application/json"}});
     addCategoryHTML(data);
 }
 
