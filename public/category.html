@@ -7,7 +7,7 @@
         <script src="./js/category.js" defer></script> 
     </head>
     <header>
-
+        <aside id="products-aside"></aside>
     </header>
 
     <body>
@@ -15,16 +15,16 @@
         
         <div class="general_container">
             <!-- dynamically added with handlebars -->
-            <aside id="products-aside"></aside>
             
-            <section id="show_products"></section>
+            
+            
 
             <section id="register_form">
 
                 <form action="/LoginService" method="POST" id="register-form">
                     <fieldset id="passwords-username">
                         
-                        <legend>Login</legend>
+                        
                         <div class="inputbox">
                             <label for="username">Username</label>
                             <input type="text" for="username" id="username" name="username" autocomplete="username">
@@ -50,9 +50,14 @@
 
                 <span id="cart-size"></span>
             </section>
+
+
+            <section id="show_products"></section><br>
             
         </div>
 
+        
+        
         <script id="products" type="text/x-handlebars-template">
             {{#each this}}
                 <figure id="{{id}}" data-description="{{description}}" data-title="{{title}}" data-image="{{image}}" data-cost="{{cost}}" data-subcategory="{{subcategory_id}}" class="show_products_figure">
@@ -70,8 +75,8 @@
         </script>
 
         <script id="createRadio" type="text/x-handlebars-template">
-            <input type="radio" id="radioall" name="sub_categories" value="radioall" checked="checked">
-            <label for="radioall">All</label><br>
+            <input class="radio_input" type="radio" id="radioall" name="sub_categories" value="radioall" checked="checked">
+            <label class="radio_label" for="radioall">All</label>
             {{makeRadio "sub_categories" options}}
         </script>
 

@@ -1,4 +1,4 @@
-.general_container{
+/*.general_container{
     display: grid; 
     grid-template-columns: 1fr 2fr;
     grid-template-areas: 
@@ -6,11 +6,18 @@
     "form products products"
     "form products products";
 }
+*/
 
+body{
+    padding: 0;
+    margin:0;
+    text-align: center;
+}
 #show_products{
     display: grid; 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-area: products;
+
 }
 
 /* each category received by the web api will be applied this rule */
@@ -21,6 +28,8 @@
     padding: 10px;
     width: 25em;
     box-shadow: 0px 2px 5px #777;
+    text-align: center;
+    margin-left: 20px;
 }
 
 .inputbox{
@@ -40,29 +49,42 @@
 }
 
 #products-aside{
-    position: sticky;
-    top: 0;
-    display: flex; 
-    flex-direction: column;
-    height: fit-content; 
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-    box-shadow: 0px 2px 5px #777;
-    background-color: #ffffff;
-    grid-area: aside;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: inline-flex; 
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: 0 0 5px;
+    font-size: x-large;
+    
 }
-
+#products-aside input{
+    display: none;
+    
+}
+#products-aside label{
+    padding:8px 14px;
+    background-color: #c7c7c7dd;
+    
+}
+#products-aside label:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
 #register_form{
-    position: sticky;
-    top: 13em;
-    display: flex; 
-    flex-direction: column;
-    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 0.2em;
     margin-bottom: 0.2em;
     box-shadow: 0px 2px 5px #777;
     background-color: #ffffff;
-    grid-area: form;
+    width: 500px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    
+}
+fieldset{
+    border:0;
 }
 
 button{
@@ -70,8 +92,6 @@ button{
     text-align: center;
     width: fit-content;
     align-self: center;
-    margin-left :auto;
-    margin-right: auto;
     margin-bottom: 10px;
     border-radius: 8px;
     border: 2px solid #646464;
@@ -79,13 +99,14 @@ button{
     padding: 10px 20px;
     transition: 0.8s;
 }
-
+button:hover{
+    cursor: pointer;
+}
 .show_products_figure figcaption{
-    background-color: #f1ff55dd;
+    background-color: #c7c7c7dd;
     border-radius: 10px;
     max-width: 100%;
     padding: 10px;
-
     box-shadow: 0px 2px 5px #777; 
 }
 
