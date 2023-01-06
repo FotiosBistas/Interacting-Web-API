@@ -113,8 +113,8 @@ app.post('/CartItemService', async(request, response) => {
     const {product_data, username, sessionId} = request.body; 
     
     let user_instance = activeUsers.getUser(username); 
-
-    if(!user_instance || user_instance.sessionId !== sessionId.sessionId){
+    log(!undefined)
+    if(!user_instance || user_instance.sessionId !== sessionId){
         //return not authorized status 
         response.status(401); 
         return; 

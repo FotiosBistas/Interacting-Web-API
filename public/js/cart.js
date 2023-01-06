@@ -22,13 +22,16 @@ let server_url = `${document.location.hostname}:${document.location.port}`;
  */
 async function fetchAsync(url, options){
     try{    
+        log("Sending request to server: " + url + " with options: " + JSON.stringify(options));
         const response = await fetch(url, options);
         
         if(!response.ok){
             throw new Error(response.statusText); 
         } 
 
+        log("Received response from server, parsing data...");
         const data = await response.json(); 
+        log("Data parsed");
         return data; 
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 

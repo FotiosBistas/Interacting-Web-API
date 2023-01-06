@@ -32,13 +32,16 @@ async function fetchAsyncHtml(url, options){
  */
 async function fetchAsync(url, options){
     try{    
+        log("Sending request to server: " + url + " with options: " + JSON.stringify(options));
         const response = await fetch(url, options);
         
         if(!response.ok){
             throw new Error(response.statusText); 
         } 
 
+        log("Received response from server, parsing data...");
         const data = await response.json(); 
+        log("Data parsed");
         return data; 
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
@@ -59,11 +62,13 @@ async function getData(sessionStorageKey, url, options){
         const data = sessionStorage.getItem(sessionStorageKey);
         
         if (data) {
+            log("Data were received by session storage, parsing data...");
             return JSON.parse(data);
         }
     
         // If data is not stored in sessionStorage, fetch it and store it
         const response = await fetchAsync(url, options);
+        log("Data were received by fetch api"); 
         sessionStorage.setItem(sessionStorageKey, JSON.stringify(response));
         return response;
     } catch (err) {

@@ -42,13 +42,15 @@ let url_cart_item_service = new URL(`${document.location.protocol}//${server_url
  */
 async function fetchAsync(url, options){
     try{    
+        log("Sending request to server: " + url + " with options: " + JSON.stringify(options));
         const response = await fetch(url, options);
         
         if(!response.ok){
             throw new Error(response.statusText); 
         } 
-
+        log("Received response from server, parsing data...");
         const data = await response.json(); 
+        log("Data parsed");
         return data; 
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
@@ -69,11 +71,15 @@ async function getData(sessionStorageKey, url, options){
         const data = sessionStorage.getItem(sessionStorageKey);
         
         if (data) {
+            log("Data were received by session storage, parsing data...");
+
             return JSON.parse(data);
         }
     
         // If data is not stored in sessionStorage, fetch it and store it
         const response = await fetchAsync(url, options);
+        log("Data were received by fetch api"); 
+
         sessionStorage.setItem(sessionStorageKey, JSON.stringify(response));
         return response;
     } catch (err) {
@@ -273,7 +279,7 @@ let figures = document.getElementById("show_products");
 figures.onclick = async function(event){
     //event delegation on the buy button displayed with each figure 
     if(event.target.id === 'buy_button'){
-        if(!session_id){
+        if(!sessionId){
             alert("Please connect to the server before adding items to your cart"); 
             return; 
         }
@@ -289,7 +295,7 @@ figures.onclick = async function(event){
         let message = {
             product_data: json_object, 
             username: username, 
-            sessionId: session_id, 
+            sessionId: sessionId, 
         }
 
         let fetchOptions = {
