@@ -13,6 +13,10 @@ class Cart{
         return this.#products; 
     }   
 
+    set products(products){
+        this.#products = products; 
+    }
+
     /**
      * 
      * @returns a json array based on the products inside the cart
