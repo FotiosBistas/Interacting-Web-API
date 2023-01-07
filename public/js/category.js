@@ -272,8 +272,6 @@ form.addEventListener('submit', async function(event){
     username = formDataObject.username; 
     addCartLink({username: username, sessionId: sessionId}); 
 
-    var elem = document.getElementById('register_form');
-    elem.parentNode.removeChild(elem);
 }); 
 
 
@@ -316,3 +314,12 @@ figures.onclick = async function(event){
     }
 
 }
+
+function myFunctionShowRegister() {
+    var x = document.getElementById("register_form");
+    if (x.style.display === "block") {
+      x.style.display = "none";
+    } else {
+      x.style.display = "block";
+    }
+  }
