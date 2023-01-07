@@ -195,7 +195,7 @@ module.exports = {
         }
         
 
-        if (newdoc.modifiedCount > 0) {
+        if (newdoc && (newdoc.modifiedCount > 0 || newdoc.matchedCount > 0)) {
             log("Increased quantity of product: " + product.title + " successfully");
             return true;
         } 
