@@ -28,6 +28,7 @@ module.exports = {
         }
         let old = this.getUser(username);
         log("Adding new items of user: " + username + " items: " + JSON.stringify(old.cart.createJSONArray()));
+        userInfo.cart.products = old.cart.products; 
         //this anyways removes the old user 
         activeUsers.set(username, userInfo); 
 
