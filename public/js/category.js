@@ -271,6 +271,9 @@ form.addEventListener('submit', async function(event){
 
     username = formDataObject.username; 
     addCartLink({username: username, sessionId: sessionId}); 
+
+    var elem = document.getElementById('register_form');
+    elem.parentNode.removeChild(elem);
 }); 
 
 
