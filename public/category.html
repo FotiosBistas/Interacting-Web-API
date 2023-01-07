@@ -15,10 +15,8 @@
         
         <div class="general_container">
             <!-- dynamically added with handlebars -->
-            
-            
-            
-
+            <p id="success-failure-connection-message"></p>
+            <p id="cart-size"></p>
             <section id="register_form">
 
                 <form action="/LoginService" method="POST" id="register-form">
@@ -46,15 +44,15 @@
                     </fieldset>
                 </form>
                 <button type="submit" id="register_button" form="register-form" value="Submit"> Submit </button>
-                <p id="success-failure-connection-message"></p>
-
-                <span id="cart-size"></span>
+                
             </section>
 
-
+            
             <section id="show_products"></section><br>
             
         </div>
+
+
 
         
         
@@ -71,7 +69,7 @@
         </script>
 
         <script id="cart-page" type="text/x-handlebars-template">
-            <a href="cart.html?username={{username}}&sessionId={{sessionId}}">Go to cart</a>
+            <a id="cart_a" href="cart.html?username={{username}}&sessionId={{sessionId}}">Go to cart</a>
         </script>
 
         <script id="createRadio" type="text/x-handlebars-template">
