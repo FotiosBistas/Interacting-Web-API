@@ -10,8 +10,9 @@ Handlebars.registerHelper('makeRadio', function(name, options){
     for (let i = 0; i < options.length; i++) {
         let option = options[i];
         html += `
+        <input type="radio" data-category="${option.category_id}" name="${name}" id="${option.id}">
         <label for="${option.id}">${option.title}</label>
-        <input type="radio" data-category="${option.category_id}" name="${name}" id="${option.id}">`
+        `
     }
     return new Handlebars.SafeString(html);
 });
