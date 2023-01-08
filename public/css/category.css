@@ -34,6 +34,15 @@ body{
     margin-top: 20px;
 }
 
+header{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:20px 5%;
+    background-color: #040939dd;
+    height: 30px;
+}
+
 .inputbox{
     display: flex; 
     flex-direction: column;
@@ -51,14 +60,8 @@ body{
 }
 
 #products-aside{
-    margin-top: 10px;
-    margin-bottom: 20px;
     display: inline-flex; 
     overflow: hidden;
-    border-radius: 30px;
-    box-shadow: 0 0 5px;
-    font-size: x-large; 
-      
 }
 #products-aside input{
     display: none;
@@ -66,12 +69,13 @@ body{
 }
 #products-aside label{
     padding:8px 14px;
-    background-color: #3444efdd;
-    
+    color: #fbfbfb;
+    font-size: larger;
 }
 #products-aside label:hover{
     cursor: pointer;
     font-weight: bold;
+
 }
 #register_form{
     margin-left: auto;
@@ -89,22 +93,17 @@ fieldset{
 }
 
 header button{
-    margin-top: 10px;
     text-align: center;
     width: fit-content;
     align-self: center;
-    margin-bottom: 10px;
     border-radius: 30px;
     border: 0;
-    padding: 10px 20px;
-    transition: 0.8s;
-    background-color: #3444efdd;
-    box-shadow: 0 0 5px;
-    font-size: x-large;  
-    margin-left: 20px;
-
+    background-color: white;
 }
-
+#header_left{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 button{
     margin-top: 10px;
     text-align: center;
@@ -119,9 +118,10 @@ button{
 }
 button:hover{
     cursor: pointer;
+    font-weight: bold;
 }
 .show_products_figure figcaption{
-    background-color: #3444efdd;
+    background-color: #6269b6dd;
     border-radius: 10px;
     max-width: 100%;
     padding: 10px;
@@ -135,19 +135,27 @@ button:hover{
 .show_products_figure img{
     max-width: 100%;
 }
-
-#cart_a {
-    background-color: #3444efdd;
-    color: black;
-    padding: 1em 1.5em;
+#cart-size a:hover {
+    font-weight: bold;
+}
+#cart-size a {
     text-decoration: none;
-    text-transform: uppercase;
-    border-radius: 15px;
-    
+    color: black;
+    border-radius: 30px;
+    text-align: center;
+    width: fit-content;
+    align-self: center;
+    border-radius: 30px;
+    border: 0;
+    padding: 10px 20px;
+    background-color:white;
+    margin-left: 20px;
 }
 #cart-size{
-    margin-bottom: 40px;
+    padding-right: 20px;
+    display: inline-block;
+    color: #fbfbfb;
 }
 #success-failure-connection-message{
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
