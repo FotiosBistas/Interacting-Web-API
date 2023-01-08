@@ -42,7 +42,14 @@ header{
     background-color: #040939dd;
     height: 30px;
 }
-
+footer{
+    align-items: center;
+    color:white;
+    height: 25px;
+    background-color: #040939dd;
+    display: flex;
+    justify-content: center;
+}
 .inputbox{
     display: flex; 
     flex-direction: column;
