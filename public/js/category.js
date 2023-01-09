@@ -267,7 +267,7 @@ form.addEventListener('submit', async function(event){
 
     let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
     cartSize = cart_size_server_response; 
-    cart_size_message.innerHTML = 'Cart size: ' + cartSize;
+    cart_size_message.innerHTML = '<span id="span_cart_size" >Cart size: ' + cartSize+'</span>';
     log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
 
     username = formDataObject.username; 

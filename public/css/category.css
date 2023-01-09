@@ -110,6 +110,11 @@ header button{
     border: 0;
     background-color: white;
 }
+header img{
+    width: 30px;
+    cursor: pointer;
+}
+
 #header_left{
     margin-top: 10px;
     margin-bottom: 10px;
@@ -148,24 +153,16 @@ button:hover{
 #cart-size a:hover {
     font-weight: bold;
 }
-#cart-size a {
-    text-decoration: none;
-    color: black;
-    border-radius: 30px;
-    text-align: center;
-    width: fit-content;
-    align-self: center;
-    border-radius: 30px;
-    border: 0;
-    padding: 10px 20px;
-    background-color:white;
-    margin-left: 20px;
-}
+
 #cart-size{
     font-size: larger;
-    padding-right: 20px;
     display: inline-block;
     color: #fbfbfb;
+
+}
+#cart-size img{
+    margin-left: 20px;
+    margin-right: 20px;
 }
 #success-failure-connection-message{
     margin-bottom: 10px;

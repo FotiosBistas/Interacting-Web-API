@@ -10,7 +10,7 @@
         <div id="products-aside"></div>
             <div id="header_left">
                 <span id="cart-size"></span>
-                <button onclick="myFunctionShowRegister()">Log in</button>
+                <img src="css/icons/login.png" onclick="myFunctionShowRegister()">
             </div>
     </header>
 
@@ -73,7 +73,9 @@
         </script>
 
         <script id="cart-page" type="text/x-handlebars-template">
-            <a id="cart_a" href="cart.html?username={{username}}&sessionId={{sessionId}}">Go to cart</a>
+            <a id="cart_a" href="cart.html?username={{username}}&sessionId={{sessionId}}">
+                <img src="css/icons/cart.png">
+            </a>
         </script>
 
         <script id="createRadio" type="text/x-handlebars-template">
