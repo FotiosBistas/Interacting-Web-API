@@ -267,7 +267,7 @@ form.addEventListener('submit', async function(event){
 
     let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
     cartSize = cart_size_server_response; 
-    cart_size_message.innerHTML = '<span id="span_cart_size" >Cart size: ' + cartSize+'</span>';
+    cart_size_message.innerHTML = 'Cart size: ' + cartSize;
     log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
 
     username = formDataObject.username; 
@@ -311,7 +311,8 @@ figures.onclick = async function(event){
         
 
         let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
-        log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");        
+        log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
+        alert("Item added to cart!");
     }
 
 }
@@ -323,4 +324,4 @@ function myFunctionShowRegister() {
     } else {
       x.style.display = "block";
     }
-  }
+}

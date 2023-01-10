@@ -44,11 +44,12 @@ header{
 }
 footer{
     align-items: center;
+    justify-content: center;
     color:white;
     height: 25px;
     background-color: #040939dd;
     display: flex;
-    justify-content: center;
+    
 }
 .inputbox{
     display: flex; 
@@ -115,10 +116,6 @@ header img{
     cursor: pointer;
 }
 
-#header_left{
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
 button{
     margin-top: 10px;
     text-align: center;
@@ -155,14 +152,17 @@ button:hover{
 }
 
 #cart-size{
-    font-size: larger;
-    display: inline-block;
+    font-size: large;
+    display: inline-flex;
     color: #fbfbfb;
-
 }
+
 #cart-size img{
     margin-left: 20px;
     margin-right: 20px;
+}
+#header_right{
+
 }
 #success-failure-connection-message{
     margin-bottom: 10px;
