@@ -332,6 +332,8 @@ figures.onclick = async function(event){
         try{
             let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
             log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
+                //TODO increase cart size 
+
             /* alert("Item added to cart!"); */
         }catch(err){
 
