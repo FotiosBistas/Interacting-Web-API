@@ -3,6 +3,7 @@ const Product = require("./models/Product");
 const UserInfo = require("./models/UserInfo");
 const mongoDBinteractions = require('./mongo-db-api/mongo.js'); 
 
+//new users are added to this map 
 const activeUsers = new Map(); 
 
 function log(text){
