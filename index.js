@@ -13,7 +13,7 @@ let ___dirname = "../public"
 //is inserted into the database 
 //if this is not enabled everything sent from teh user is automatically inserted 
 //into the database
-let batchWrites = true; 
+let batchWrites = false; 
 
 function log(text){
     var time = new Date();
@@ -62,8 +62,9 @@ app.get('/CartRetrievalService', async(request,response)=> {
         return; 
     }else{  
         try{
+            log("Sending products of user's cart to user");
             const res = await mongoDBinteractions.getProductsFromDatabaseCart(dbclient, user_instance);
-
+            log("Sent the products");
             if(res){
                 response.status(200).json(res);
                 return; 
@@ -100,7 +101,9 @@ app.get('/CartSizeService', async(request, response) => {
         log("Sent cart product length to user");
     }else{
         try{
+            log("Sending user instance cart->products length");
             const res = await mongoDBinteractions.getDatabaseCartListSize(dbclient, user_instance);
+            log("Sent cart product length to user");
             if(res){
                 response.status(200).json(res); 
             }else if(res == 0){
@@ -142,7 +145,11 @@ app.post('/CartItemService', async(request, response) => {
         log("Added new product to cart instance");
     }else{
         try{
+            log("Adding new product into cart from json data");
+            //set true because user has a cart now 
+            user_instance.cart = true; 
             const res = await mongoDBinteractions.addProductObjectDatabaseToCart(dbclient, product_data, user_instance);
+            log("Added new product to cart");
             if(res){
                 response.status(200).json("Added product"); 
                 return; 
@@ -176,6 +183,7 @@ app.post('/LoginService',async (request, response) => {
                 cart = true; 
             }
             if(!batchWrites){
+                log("Adding new user to simple map"); 
                 activeUsers.addNewUser(username, {
                     _id: res._id, 
                     username: res.username, 
@@ -194,6 +202,7 @@ app.post('/LoginService',async (request, response) => {
                     }, res.cart
                 ); 
                 // add user instance to current users 
+                log("Adding new user to complex map"); 
                 activeUsers.addNewUserInfo(new_active_user.username, new_active_user, dbclient); 
                 //send session id back to the user 
             }
