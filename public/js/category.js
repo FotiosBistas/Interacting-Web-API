@@ -285,6 +285,7 @@ form.addEventListener('submit', async function(event){
     }catch(err){
         //TODO handle error 
     }
+    //TODO increase cart size 
     cartSize = cart_size_server_response; 
     cart_size_message.innerHTML = 'Cart size: ' + cartSize;
     log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
