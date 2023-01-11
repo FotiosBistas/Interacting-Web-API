@@ -8,6 +8,11 @@ const port = 8080;
 
 let ___dirname = "../public"
 
+//When this is enabled the server works as if there was no mongodb and after 
+//the server shutdowns on the SAME user (with username) reconnects everything in the cart
+//is inserted into the database 
+//if this is not enabled everything sent from teh user is automatically inserted 
+//into the database
 let batchWrites = true; 
 
 function log(text){
