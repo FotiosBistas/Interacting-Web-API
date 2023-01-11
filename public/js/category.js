@@ -40,6 +40,7 @@ let url_cart_item_service = new URL(`${document.location.protocol}//${server_url
  * @param {*} url the url we want to retrieve the data from 
  * @param {*} options the options that are specified in the http header 
  * @returns the data received 
+ * @throws the error caught by the fetch function or the response.json() 
  */
 async function fetchAsync(url, options){
     try{    
@@ -56,6 +57,7 @@ async function fetchAsync(url, options){
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
         alert(err);
+        throw new Error(err); 
     }
 }
 
@@ -64,7 +66,8 @@ async function fetchAsync(url, options){
  * @param {*} url the url we want to retrieve the data from 
  * @param {*} options the options that are specified in the http header 
  * @param {*} sessionStorageKey the key that the data will be stored for using session storage.
- * @returns 
+ * @returns the data of the session storage or the data received the by the server 
+ * @throws the underlying error caught by fetch 
  */
 async function getData(sessionStorageKey, url, options){
     try {
@@ -86,22 +89,29 @@ async function getData(sessionStorageKey, url, options){
     } catch (err) {
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
         alert(err);
+        throw new Error(err); 
     }
 }
 
 
 const fetchSubcategoriesProducts = async () => {
     const options = { method: "GET" };
-    const data = await getData('products' + categoryId, url_subcategories_products, options);
-
+    try{
+        const data = await getData('products' + categoryId, url_subcategories_products, options);
+    }catch(err){
+        //TODO handle the error 
+    }
     // Use the data to populate the list of products on the page
     addProductHTML(data);
   };
   
 const fetchSubcategories = async () => {
     const options = { method: "GET" };
-    const data = await getData('subcategories' + categoryId, url_subcategories, options);
-  
+    try{
+        const data = await getData('subcategories' + categoryId, url_subcategories, options);
+    }catch(err){
+        //TODO handle the error 
+    }
     // Use the data to populate the list of products on the page
     createRadio(data);
   };
@@ -109,6 +119,7 @@ const fetchSubcategories = async () => {
 fetchSubcategoriesProducts();
 fetchSubcategories();
 
+//TODO add key of template 
 function addProductHTML(data){
     let rawTemplate = document.getElementById("products").innerHTML;
     let compiledTemplate = Handlebars.compile(rawTemplate);
@@ -241,7 +252,11 @@ form.addEventListener('submit', async function(event){
 
     log("Sending login service request"); 
      
-    let login_service_server_response = await fetchAsync(url_login_service, fetchOptions); 
+    try{
+        let login_service_server_response = await fetchAsync(url_login_service, fetchOptions); 
+    }catch(err){
+        //TODO handle error 
+    }
     log("Server responded after login request: " + JSON.stringify(login_service_server_response));
     sessionId = login_service_server_response.sessionId; 
     message.innerHTML = "Successfull connection with session id: " + sessionId; 
@@ -265,7 +280,11 @@ form.addEventListener('submit', async function(event){
         },
     };
 
-    let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
+    try{
+        let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
+    }catch(err){
+        //TODO handle error 
+    }
     cartSize = cart_size_server_response; 
     cart_size_message.innerHTML = 'Cart size: ' + cartSize;
     log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
@@ -309,10 +328,14 @@ figures.onclick = async function(event){
             body: JSON.stringify(message),
         };
         
+        try{
+            let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
+            log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
+            /* alert("Item added to cart!"); */
+        }catch(err){
 
-        let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
-        log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
-        alert("Item added to cart!");
+        }
+        
     }
 
 }

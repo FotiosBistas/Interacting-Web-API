@@ -36,6 +36,7 @@ async function fetchAsync(url, options){
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
         alert(err);
+        throw new Error(err);
     }
 }
 
@@ -50,7 +51,11 @@ let fetch_options = {
 };
 
 const getProductsFromCart = async() => {
-    let data = await fetchAsync(url, fetch_options); 
+    try{
+        let data = await fetchAsync(url, fetch_options); 
+    }catch(err){
+        //TODO handle error 
+    }
     let totalCost = 0;
     data.forEach(item => {
         totalCost += +item.cost;

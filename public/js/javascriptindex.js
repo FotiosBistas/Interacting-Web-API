@@ -46,6 +46,7 @@ async function fetchAsync(url, options){
     }catch(err){
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
         alert(err);
+        throw new Error(err)
     }
 }
 
@@ -67,13 +68,16 @@ async function getData(sessionStorageKey, url, options){
         }
     
         // If data is not stored in sessionStorage, fetch it and store it
-        const response = await fetchAsync(url, options);
+     
+         const response = await fetchAsync(url, options);
+    
         log("Data were received by fetch api"); 
         sessionStorage.setItem(sessionStorageKey, JSON.stringify(response));
         return response;
     } catch (err) {
         log("Error: " + err + " while fetching: " + url + " with options: " + JSON.stringify(options)); 
         alert(err);
+        throw new Error(err); 
     }
 }
 
@@ -87,7 +91,11 @@ getHtmlFromWebServer();
 let url = new URL('https://wiki-shop.onrender.com/categories/');
 
 const getProductCategoriesFromServer = async() => {
-    let data = await getData('categories', url, {method: 'GET',"headers":{"Accept":"application/json"}});
+    try{
+        let data = await getData('categories', url, {method: 'GET',"headers":{"Accept":"application/json"}});
+    }catch(err){
+        //TODO handle error 
+    }
     addCategoryHTML(data);
 }
 
