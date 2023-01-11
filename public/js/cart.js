@@ -51,16 +51,18 @@ let fetch_options = {
 };
 
 const getProductsFromCart = async() => {
+    let data = null; 
     try{
-        let data = await fetchAsync(url, fetch_options); 
+        data = await fetchAsync(url, fetch_options); 
+        let totalCost = 0;
+        data.forEach(item => {
+            totalCost += +item.cost;
+        });
+        makeCartList(data, totalCost);
     }catch(err){
         //TODO handle error 
     }
-    let totalCost = 0;
-    data.forEach(item => {
-        totalCost += +item.cost;
-    });
-    makeCartList(data, totalCost);
+    
 };
 
 getProductsFromCart(); 

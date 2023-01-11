@@ -98,22 +98,24 @@ const fetchSubcategoriesProducts = async () => {
     const options = { method: "GET" };
     try{
         const data = await getData('products' + categoryId, url_subcategories_products, options);
+        // Use the data to populate the list of products on the page
+        addProductHTML(data);
     }catch(err){
         //TODO handle the error 
     }
-    // Use the data to populate the list of products on the page
-    addProductHTML(data);
+    
   };
   
 const fetchSubcategories = async () => {
     const options = { method: "GET" };
     try{
         const data = await getData('subcategories' + categoryId, url_subcategories, options);
+        // Use the data to populate the list of products on the page
+        createRadio(data);
     }catch(err){
         //TODO handle the error 
     }
-    // Use the data to populate the list of products on the page
-    createRadio(data);
+    
   };
   
 fetchSubcategoriesProducts();
@@ -251,15 +253,16 @@ form.addEventListener('submit', async function(event){
     };
 
     log("Sending login service request"); 
-     
+    let login_service_server_response = null; 
     try{
-        let login_service_server_response = await fetchAsync(url_login_service, fetchOptions); 
+        login_service_server_response = await fetchAsync(url_login_service, fetchOptions); 
+        log("Server responded after login request: " + JSON.stringify(login_service_server_response));
+        sessionId = login_service_server_response.sessionId; 
+        message.innerHTML = "Successfull connection with session id: " + sessionId; 
     }catch(err){
         //TODO handle error 
     }
-    log("Server responded after login request: " + JSON.stringify(login_service_server_response));
-    sessionId = login_service_server_response.sessionId; 
-    message.innerHTML = "Successfull connection with session id: " + sessionId; 
+    
     log("Sending cart size service request");
     const queryParams = {
         username: formdata.get('username'),
@@ -279,19 +282,20 @@ form.addEventListener('submit', async function(event){
             Accept: "application/json",
         },
     };
-
+    let cart_size_server_response = null; 
     try{
-        let cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
+        cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
+        //TODO increase cart size 
+        cartSize = cart_size_server_response; 
+        cart_size_message.innerHTML = 'Cart size: ' + cartSize;
+        log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
+
+        username = formDataObject.username; 
+        addCartLink({username: username, sessionId: sessionId}); 
     }catch(err){
         //TODO handle error 
     }
-    //TODO increase cart size 
-    cartSize = cart_size_server_response; 
-    cart_size_message.innerHTML = 'Cart size: ' + cartSize;
-    log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
-
-    username = formDataObject.username; 
-    addCartLink({username: username, sessionId: sessionId}); 
+    
 
 }); 
 
@@ -328,11 +332,11 @@ figures.onclick = async function(event){
             },
             body: JSON.stringify(message),
         };
-        
+        let cart_item_service_server_response = null; 
         try{
-            let cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
+            cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
             log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
-                //TODO increase cart size 
+            //TODO increase cart size 
 
             /* alert("Item added to cart!"); */
         }catch(err){

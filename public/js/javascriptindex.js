@@ -93,10 +93,11 @@ let url = new URL('https://wiki-shop.onrender.com/categories/');
 const getProductCategoriesFromServer = async() => {
     try{
         let data = await getData('categories', url, {method: 'GET',"headers":{"Accept":"application/json"}});
+        addCategoryHTML(data);
     }catch(err){
         //TODO handle error 
     }
-    addCategoryHTML(data);
+   
 }
 
 getProductCategoriesFromServer(); 
