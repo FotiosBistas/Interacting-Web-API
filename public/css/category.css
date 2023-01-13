@@ -167,7 +167,12 @@ button:hover{
 #success-failure-connection-message{
     margin-bottom: 10px;
 }
+
+.success_mess{
+    position: absolute;
+}
 .success_mess img{
+
     width: 50px;
     float: right;
     padding: 8px;
