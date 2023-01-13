@@ -56,7 +56,7 @@ const getProductsFromCart = async() => {
         data = await fetchAsync(url, fetch_options); 
         let totalCost = 0;
         data.forEach(item => {
-            totalCost += +item.cost;
+            totalCost += +(item.cost*item.quantity);
         });
         makeCartList(data, totalCost);
     }catch(err){

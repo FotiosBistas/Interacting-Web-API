@@ -285,7 +285,6 @@ form.addEventListener('submit', async function(event){
     let cart_size_server_response = null; 
     try{
         cart_size_server_response = await fetchAsync(cart_size_url, newFetchOptions); 
-        //TODO increase cart size 
         cartSize = cart_size_server_response; 
         cart_size_message.innerHTML = 'Cart size: ' + cartSize;
         log("Server responded after cart size request: " + JSON.stringify(cart_size_server_response));
@@ -333,12 +332,18 @@ figures.onclick = async function(event){
             body: JSON.stringify(message),
         };
         let cart_item_service_server_response = null; 
+
+        
         try{
             cart_item_service_server_response = await fetchAsync(url_cart_item_service, fetchOptions); 
             log("Server responsed with: " + cart_item_service_server_response + " after requesting for cart item service");  
             //TODO increase cart size 
 
             /* alert("Item added to cart!"); */
+            figure.childNodes[11].innerHTML= '<img src="css/icons/tick.png">';
+            setTimeout(function(){
+                figure.childNodes[11].innerHTML= '';
+            }, 2000);
         }catch(err){
 
         }
@@ -346,6 +351,8 @@ figures.onclick = async function(event){
     }
 
 }
+
+
 
 function myFunctionShowRegister() {
     var x = document.getElementById("register_form");

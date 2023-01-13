@@ -153,7 +153,7 @@ button:hover{
 
 #cart-size{
     font-size: large;
-    display: inline-flex;
+    display: inline-block;
     color: #fbfbfb;
 }
 
@@ -162,8 +162,13 @@ button:hover{
     margin-right: 20px;
 }
 #header_right{
-
+    height: 30px;
 }
 #success-failure-connection-message{
     margin-bottom: 10px;
+}
+.success_mess img{
+    width: 50px;
+    float: right;
+    padding: 8px;
 }
