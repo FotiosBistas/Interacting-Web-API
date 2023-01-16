@@ -260,7 +260,8 @@ form.addEventListener('submit', async function(event){
         sessionId = login_service_server_response.sessionId; 
         message.innerHTML = "Successfull connection with session id: " + sessionId; 
     }catch(err){
-        //TODO handle error 
+        //handle error 
+        alert("Something went wrong with the connection to the server. Try again.");
     }
     
     log("Sending cart size service request");
@@ -292,7 +293,8 @@ form.addEventListener('submit', async function(event){
         username = formDataObject.username; 
         addCartLink({username: username, sessionId: sessionId}); 
     }catch(err){
-        //TODO handle error 
+        //handle error
+        alert("Something went wrong on loading the cart items. Try logging in again."); 
     }
     
 

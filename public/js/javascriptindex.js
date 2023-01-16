@@ -95,7 +95,8 @@ const getProductCategoriesFromServer = async() => {
         let data = await getData('categories', url, {method: 'GET',"headers":{"Accept":"application/json"}});
         addCategoryHTML(data);
     }catch(err){
-        //TODO handle error 
+        //handle error 
+        alert("Something went wrong during the loading of the page. Try reloading the page.");
     }
    
 }

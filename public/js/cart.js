@@ -60,7 +60,8 @@ const getProductsFromCart = async() => {
         });
         makeCartList(data, totalCost);
     }catch(err){
-        //TODO handle error 
+        //handle error 
+        alert("Something went wrong trying to retrieve items from cart.");
     }
     
 };
